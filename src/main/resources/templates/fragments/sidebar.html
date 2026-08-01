@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <aside th:fragment="sidebar(currentPage)" class="sidebar">
+        <div class="sidebar-brand">
+            📊 <span>Dashboard</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li>
+                <a th:href="@{/}" th:classappend="${currentPage == 'home'} ? 'active'">
+                    <span class="icon">🏠</span> Home
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/market}" th:classappend="${currentPage == 'market'} ? 'active'">
+                    <span class="icon">🏪</span> Market
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/sales}" th:classappend="${currentPage == 'sales'} ? 'active'">
+                    <span class="icon">💰</span> Sales
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/stock}" th:classappend="${currentPage == 'stock'} ? 'active'">
+                    <span class="icon">📦</span> Stock
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/shop}" th:classappend="${currentPage == 'shop'} ? 'active'">
+                    <span class="icon">🛒</span> Shop
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/about}" th:classappend="${currentPage == 'about'} ? 'active'">
+                    <span class="icon">ℹ️</span> About
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            &copy; 2026 Spring Boot Demo
+        </div>
+    </aside>
+</body>
+</html>

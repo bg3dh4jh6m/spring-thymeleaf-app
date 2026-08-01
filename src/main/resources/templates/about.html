@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">About</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" th:replace="~{fragments/sidebar :: sidebar(currentPage='about')}"></aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="content-header">
+            <h1 th:text="${title}">About</h1>
+        </header>
+
+        <div class="content-body">
+            <div class="card">
+                <h2 th:text="${message}">About this application.</h2>
+            </div>
+
+            <div class="card">
+                <h3>Tech Stack</h3>
+                <table>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Version</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>Java</td>
+                        <td>17</td>
+                        <td>Programming Language</td>
+                    </tr>
+                    <tr>
+                        <td>Spring Boot</td>
+                        <td>3.5.3</td>
+                        <td>Application Framework</td>
+                    </tr>
+                    <tr>
+                        <td>Thymeleaf</td>
+                        <td>3.x</td>
+                        <td>Server-side Template Engine</td>
+                    </tr>
+                    <tr>
+                        <td>Maven</td>
+                        <td>3.x</td>
+                        <td>Build & Dependency Management</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
