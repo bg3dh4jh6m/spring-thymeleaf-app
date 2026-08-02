@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">HOREMAG каталог</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body { overflow-x: hidden; }
+        .catalog-header-note { color: #6b7280; font-size: .9rem; }
+        .catalog-stats { display: grid; grid-template-columns: repeat(3, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+        .catalog-stat { background: #fff; border-radius: 10px; padding: 1rem 1.25rem; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+        .catalog-stat strong { display: block; color: #4f5fd5; font-size: 1.7rem; }
+        .catalog-stat span { color: #6b7280; font-size: .86rem; }
+        .catalog-alert { padding: .85rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+        .catalog-alert.success { color: #166534; background: #dcfce7; border: 1px solid #86efac; }
+        .catalog-alert.error { color: #991b1b; background: #fee2e2; border: 1px solid #fca5a5; }
+        .catalog-form { background: #fff; border-radius: 10px; margin-bottom: 1.25rem; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+        .catalog-form summary { cursor: pointer; padding: 1rem 1.25rem; color: #34375a; font-weight: 700; user-select: none; }
+        .catalog-form form { padding: 0 1.25rem 1.25rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 1rem; }
+        .form-field { display: flex; flex-direction: column; gap: .35rem; }
+        .form-field.wide { grid-column: span 2; }
+        .form-field label { color: #4b5563; font-size: .84rem; font-weight: 650; }
+        .form-field input, .form-field select, .form-field textarea,
+        .catalog-filters input, .catalog-filters select { width: 100%; border: 1px solid #d7dbe8; border-radius: 7px; padding: .7rem .75rem; background: #fff; color: #30344c; font: inherit; }
+        .form-field textarea { min-height: 78px; resize: vertical; }
+        .catalog-submit { align-self: end; border: 0; border-radius: 7px; padding: .74rem 1rem; background: #667eea; color: #fff; font-weight: 700; cursor: pointer; }
+        .catalog-filters { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(160px, 1fr) minmax(150px, 1fr) auto; gap: .75rem; align-items: end; margin-bottom: 1rem; }
+        .catalog-reset { border: 1px solid #d7dbe8; border-radius: 7px; padding: .7rem 1rem; background: #fff; color: #4b5563; cursor: pointer; }
+        .catalog-table-scroll { max-width: 100%; overflow-x: auto; border: 1px solid #e8eaf2; border-radius: 8px; }
+        .catalog-table { min-width: 1080px; margin: 0; }
+        .catalog-table th { white-space: nowrap; position: sticky; top: 0; }
+        .catalog-table td { vertical-align: top; }
+        .catalog-code { color: #505fc4; font-weight: 700; white-space: nowrap; }
+        .catalog-name { color: #252a43; font-weight: 650; min-width: 220px; }
+        .catalog-packages { min-width: 180px; }
+        .type-badge { display: inline-block; border-radius: 999px; padding: .25rem .55rem; font-size: .75rem; font-weight: 700; background: #eef2ff; color: #4f46a5; white-space: nowrap; }
+        .type-badge.packaging { background: #fff7ed; color: #9a3412; }
+        .type-badge.consumable { background: #ecfdf5; color: #047857; }
+        .source-note { color: #6b7280; font-size: .8rem; }
+        .catalog-empty-filter { display: none; padding: 2rem; text-align: center; color: #6b7280; }
+        @media (max-width: 900px) {
+            .catalog-stats, .form-grid { grid-template-columns: 1fr 1fr; }
+            .catalog-filters { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 620px) {
+            .catalog-stats, .form-grid, .catalog-filters { grid-template-columns: 1fr; }
+            .form-field.wide { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar" th:replace="~{fragments/sidebar :: sidebar(currentPage='catalog')}"></aside>
+
+    <div class="main-content">
+        <header class="content-header">
+            <div>
+                <h1>📚 HOREMAG продуктов каталог</h1>
+                <div class="catalog-header-note">Нашите артикули и връзката им с бъдещи доставчици, опаковки и консумативи</div>
+            </div>
+        </header>
+
+        <main class="content-body">
+            <div class="catalog-stats">
+                <div class="catalog-stat"><strong th:text="${productCount}">0</strong><span>всички каталожни продукти</span></div>
+                <div class="catalog-stat"><strong th:text="${manualCount}">0</strong><span>ръчно добавени</span></div>
+                <div class="catalog-stat"><strong th:text="${packagingCount}">0</strong><span>опаковки и амбалаж</span></div>
+            </div>
+
+            <div th:if="${catalogSuccess}" class="catalog-alert success" th:text="${catalogSuccess}"></div>
+            <div th:if="${catalogError}" class="catalog-alert error" th:text="${catalogError}"></div>
+
+            <details class="catalog-form">
+                <summary>＋ Добави нов наш продукт, опаковка или консуматив</summary>
+                <form method="post" th:action="@{/catalog/products}">
+                    <div class="form-grid">
+                        <div class="form-field wide">
+                            <label for="name">Име на продукта *</label>
+                            <input id="name" name="name" required maxlength="500" placeholder="Напр. Стъклено бурканче 200 мл">
+                        </div>
+                        <div class="form-field">
+                            <label for="productType">Тип *</label>
+                            <select id="productType" name="productType">
+                                <option value="INGREDIENT">Храна / съставка</option>
+                                <option value="PACKAGING">Опаковка / амбалаж</option>
+                                <option value="CONSUMABLE">Консуматив</option>
+                                <option value="OTHER">Друго</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="category">Категория *</label>
+                            <input id="category" name="category" list="catalog-categories" required placeholder="Напр. Бурканчета">
+                            <datalist id="catalog-categories">
+                                <option th:each="category : ${categories}" th:value="${category}"></option>
+                                <option value="Бурканчета"></option>
+                                <option value="Бутилки"></option>
+                                <option value="Торбички"></option>
+                                <option value="Етикети"></option>
+                                <option value="Капачки"></option>
+                                <option value="Кутии"></option>
+                                <option value="Кетъринг консумативи"></option>
+                            </datalist>
+                        </div>
+                        <div class="form-field">
+                            <label for="baseUnit">Базова мерна единица *</label>
+                            <select id="baseUnit" name="baseUnit">
+                                <option value="бр">брой</option>
+                                <option value="кг">килограм</option>
+                                <option value="л">литър</option>
+                                <option value="м">метър</option>
+                                <option value="м²">квадратен метър</option>
+                                <option value="ролка">ролка</option>
+                                <option value="пакет">пакет</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="packageOptions">Размери / разфасовки</label>
+                            <input id="packageOptions" name="packageOptions" maxlength="1000" placeholder="100 г / 500 г / 1 кг или 200 мл / 500 мл">
+                        </div>
+                        <div class="form-field wide">
+                            <label for="notes">Бележки</label>
+                            <textarea id="notes" name="notes" maxlength="2000" placeholder="Материал, размер, цвят, предназначение или други уточнения"></textarea>
+                        </div>
+                        <button class="catalog-submit" type="submit">Добави и издай HOREMAG №</button>
+                    </div>
+                </form>
+            </details>
+
+            <section class="card">
+                <div class="catalog-filters">
+                    <div class="form-field">
+                        <label for="catalog-search">Търсене</label>
+                        <input id="catalog-search" type="search" placeholder="Име, HOREMAG №, категория или разфасовка">
+                    </div>
+                    <div class="form-field">
+                        <label for="catalog-category-filter">Категория</label>
+                        <select id="catalog-category-filter">
+                            <option value="">Всички категории</option>
+                            <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="catalog-type-filter">Тип</label>
+                        <select id="catalog-type-filter">
+                            <option value="">Всички типове</option>
+                            <option value="INGREDIENT">Храна / съставка</option>
+                            <option value="PACKAGING">Опаковка / амбалаж</option>
+                            <option value="CONSUMABLE">Консуматив</option>
+                            <option value="OTHER">Друго</option>
+                        </select>
+                    </div>
+                    <button id="catalog-reset" class="catalog-reset" type="button">Изчисти</button>
+                </div>
+                <p class="catalog-header-note"><span id="catalog-visible-count" th:text="${productCount}">0</span> показани продукта</p>
+
+                <div class="catalog-table-scroll">
+                    <table class="catalog-table">
+                        <thead>
+                            <tr>
+                                <th>HOREMAG №</th>
+                                <th>Продукт</th>
+                                <th>Тип</th>
+                                <th>Категория</th>
+                                <th>Мярка</th>
+                                <th>Размери / разфасовки</th>
+                                <th>Произход</th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalog-products-body">
+                            <tr th:each="product : ${products}"
+                                th:attr="data-search=${product.internalCode + ' ' + product.name + ' ' + product.category + ' ' + (product.packageOptions ?: '')},data-category=${product.category},data-type=${product.productType ?: 'INGREDIENT'}">
+                                <td class="catalog-code" th:text="${product.internalCode}">HMG-000001</td>
+                                <td class="catalog-name">
+                                    <span th:text="${product.name}">Продукт</span>
+                                    <div class="source-note" th:if="${product.notes != null && !product.notes.isBlank()}" th:text="${product.notes}"></div>
+                                </td>
+                                <td>
+                                    <span class="type-badge packaging" th:if="${product.productType == 'PACKAGING'}">Опаковка</span>
+                                    <span class="type-badge consumable" th:if="${product.productType == 'CONSUMABLE'}">Консуматив</span>
+                                    <span class="type-badge" th:if="${product.productType == null || product.productType == 'INGREDIENT'}">Храна</span>
+                                    <span class="type-badge" th:if="${product.productType == 'OTHER'}">Друго</span>
+                                </td>
+                                <td th:text="${product.category}">Категория</td>
+                                <td th:text="${product.baseUnit}">бр</td>
+                                <td class="catalog-packages" th:text="${product.packageOptions != null && !product.packageOptions.isBlank() ? product.packageOptions : '—'}">—</td>
+                                <td class="source-note" th:switch="${product.source}">
+                                    <span th:case="'PHOTO_CATALOG_2026-08-02'">Продуктов лист</span>
+                                    <span th:case="'MANUAL'">Ръчно добавен</span>
+                                    <span th:case="*">Доставчик / съществуващ</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="catalog-empty-filter" class="catalog-empty-filter">Няма продукти, които отговарят на тези филтри.</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (() => {
+            const search = document.getElementById('catalog-search');
+            const category = document.getElementById('catalog-category-filter');
+            const type = document.getElementById('catalog-type-filter');
+            const rows = [...document.querySelectorAll('#catalog-products-body tr')];
+            const counter = document.getElementById('catalog-visible-count');
+            const empty = document.getElementById('catalog-empty-filter');
+
+            const applyFilters = () => {
+                const query = search.value.toLocaleLowerCase('bg').trim();
+                let visible = 0;
+                rows.forEach(row => {
+                    const matches = (!query || row.dataset.search.toLocaleLowerCase('bg').includes(query))
+                        && (!category.value || row.dataset.category === category.value)
+                        && (!type.value || row.dataset.type === type.value);
+                    row.hidden = !matches;
+                    if (matches) visible++;
+                });
+                counter.textContent = visible;
+                empty.style.display = visible ? 'none' : 'block';
+            };
+
+            search.addEventListener('input', applyFilters);
+            category.addEventListener('change', applyFilters);
+            type.addEventListener('change', applyFilters);
+            document.getElementById('catalog-reset').addEventListener('click', () => {
+                search.value = '';
+                category.value = '';
+                type.value = '';
+                applyFilters();
+            });
+        })();
+    </script>
+</body>
+</html>

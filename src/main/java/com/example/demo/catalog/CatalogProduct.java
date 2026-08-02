@@ -37,6 +37,18 @@ public class CatalogProduct {
     @Column(name = "base_unit", nullable = false, length = 24)
     private String baseUnit = "бр";
 
+    @Column(name = "product_type", length = 32)
+    private String productType = "INGREDIENT";
+
+    @Column(name = "package_options", length = 1000)
+    private String packageOptions;
+
+    @Column(length = 2000)
+    private String notes;
+
+    @Column(length = 64)
+    private String source;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -57,6 +69,14 @@ public class CatalogProduct {
     public void setCategory(String category) { this.category = category; }
     public String getBaseUnit() { return baseUnit; }
     public void setBaseUnit(String baseUnit) { this.baseUnit = baseUnit; }
+    public String getProductType() { return productType; }
+    public void setProductType(String productType) { this.productType = productType; }
+    public String getPackageOptions() { return packageOptions; }
+    public void setPackageOptions(String packageOptions) { this.packageOptions = packageOptions; }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+    public String getSource() { return source; }
+    public void setSource(String source) { this.source = source; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }

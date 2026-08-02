@@ -18,6 +18,11 @@
                 </a>
             </li>
             <li>
+                <a th:href="@{/catalog}" th:classappend="${currentPage == 'catalog'} ? 'active'">
+                    <span class="icon">📚</span> Каталог
+                </a>
+            </li>
+            <li>
                 <a th:href="@{/sales}" th:classappend="${currentPage == 'sales'} ? 'active'">
                     <span class="icon">💰</span> Sales
                 </a>

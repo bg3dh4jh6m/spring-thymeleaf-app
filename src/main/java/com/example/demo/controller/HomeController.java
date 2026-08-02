@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.service.MetroScraperService;
 import com.example.demo.service.GourmetSpiceService;
 import com.example.demo.service.MetroCatalogService;
+import com.example.demo.service.CatalogService;
+import com.example.demo.catalog.CatalogProduct;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
@@ -13,6 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,10 +33,13 @@ public class HomeController {
 
     private final GourmetSpiceService gourmetSpiceService;
     private final MetroCatalogService metroCatalogService;
+    private final CatalogService catalogService;
 
-    public HomeController(GourmetSpiceService gourmetSpiceService, MetroCatalogService metroCatalogService) {
+    public HomeController(GourmetSpiceService gourmetSpiceService, MetroCatalogService metroCatalogService,
+                          CatalogService catalogService) {
         this.gourmetSpiceService = gourmetSpiceService;
         this.metroCatalogService = metroCatalogService;
+        this.catalogService = catalogService;
     }
 
     @GetMapping("/")
@@ -137,6 +145,42 @@ public class HomeController {
     public String shop(Model model) {
         model.addAttribute("title", "Shop");
         return "shop";
+    }
+
+    @GetMapping("/catalog")
+    public String catalog(Model model) {
+        List<CatalogProduct> products = catalogService.getAllProducts();
+        model.addAttribute("title", "HOREMAG каталог");
+        model.addAttribute("products", products);
+        model.addAttribute("categories", products.stream()
+                .map(CatalogProduct::getCategory)
+                .filter(category -> category != null && !category.isBlank())
+                .distinct()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList());
+        model.addAttribute("productCount", products.size());
+        model.addAttribute("manualCount", products.stream().filter(product -> "MANUAL".equals(product.getSource())).count());
+        model.addAttribute("packagingCount", products.stream().filter(product -> "PACKAGING".equals(product.getProductType())).count());
+        return "catalog";
+    }
+
+    @PostMapping("/catalog/products")
+    public String addCatalogProduct(@RequestParam String name,
+                                    @RequestParam(defaultValue = "INGREDIENT") String productType,
+                                    @RequestParam String category,
+                                    @RequestParam(defaultValue = "бр") String baseUnit,
+                                    @RequestParam(defaultValue = "") String packageOptions,
+                                    @RequestParam(defaultValue = "") String notes,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            CatalogProduct product = catalogService.createProduct(
+                    name, productType, category, baseUnit, packageOptions, notes);
+            redirectAttributes.addFlashAttribute("catalogSuccess",
+                    "Добавен е " + product.getInternalCode() + " — " + product.getName());
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("catalogError", e.getMessage());
+        }
+        return "redirect:/catalog";
     }
 
 }
