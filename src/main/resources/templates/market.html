@@ -56,8 +56,8 @@
         html, body { overflow-x: hidden; }
         .card { max-width: 100%; overflow: hidden; }
         .price-table { min-width: 1100px; }
-        #metro-table-scroll { scrollbar-gutter: stable; padding-bottom: 0.35rem; cursor: grab; }
-        #metro-table-scroll.dragging { cursor: grabbing; user-select: none; }
+        #metro-table-scroll { scrollbar-gutter: stable; padding-bottom: 0.35rem; }
+        #metro-price-table td { user-select: text; cursor: text; }
         #metro-table-scroll::-webkit-scrollbar { height: 13px; }
         #metro-table-scroll::-webkit-scrollbar-track { background: #e8ebf4; border-radius: 8px; }
         #metro-table-scroll::-webkit-scrollbar-thumb { background: #7886c5; border-radius: 8px; border: 2px solid #e8ebf4; }
@@ -226,7 +226,8 @@
                         <div id="metro-column-menu" class="column-menu" aria-label="Избор на колони">
                             <label><input type="checkbox" data-toggle-column="image" checked> Снимка</label>
                             <label><input type="checkbox" data-toggle-column="name" checked> Продукт</label>
-                            <label><input type="checkbox" data-toggle-column="packageSize" checked> Разфасовка</label>
+                            <label><input type="checkbox" data-toggle-column="packageWeight" checked> Грамаж</label>
+                            <label><input type="checkbox" data-toggle-column="unitsPerPackage" checked> Бройки в пакет</label>
                             <label><input type="checkbox" data-toggle-column="trademark" checked> Марка</label>
                             <label><input type="checkbox" data-toggle-column="price" checked> Цена</label>
                             <label><input type="checkbox" data-toggle-column="pricePerKg" checked> Цена/кг</label>
@@ -240,7 +241,8 @@
                                 <tr>
                                     <th data-column="image">Снимка</th>
                                     <th data-column="name">Продукт</th>
-                                    <th data-column="packageSize">Разфасовка</th>
+                                    <th data-column="packageWeight">Грамаж</th>
+                                    <th data-column="unitsPerPackage">Бройки в пакет</th>
                                     <th data-column="trademark">Марка</th>
                                     <th data-column="price">Цена</th>
                                     <th data-column="pricePerKg">Цена/кг</th>
@@ -254,7 +256,8 @@
                                         <img th:unless="${p.imageUrl != null && !p.imageUrl.isEmpty()}" src="/images/product-placeholder.svg" class="product-img" alt="Няма снимка">
                                     </td>
                                     <td data-column="name" th:text="${p.name}">—</td>
-                                    <td data-column="packageSize" th:text="${p.packageSize} ?: '—'">—</td>
+                                    <td data-column="packageWeight" th:text="${p.packageWeight} ?: '—'">—</td>
+                                    <td data-column="unitsPerPackage" th:text="${p.unitsPerPackage} ?: '—'">—</td>
                                     <td data-column="trademark" th:text="${p.trademark} ?: '—'">—</td>
                                     <td data-column="price" class="price" th:text="${p.price}">—</td>
                                     <td data-column="pricePerKg" class="price-per-kg" th:text="${p.pricePerKg} ?: '—'">—</td>
@@ -324,10 +327,15 @@
         let metroProducts = [];
         let metroSortKey = 'name';
         let metroSortDirection = 1;
-        const defaultMetroColumns = ['image', 'name', 'packageSize', 'trademark', 'price', 'pricePerKg', 'addedAt'];
+        const defaultMetroColumns = ['image', 'name', 'packageWeight', 'unitsPerPackage', 'trademark', 'price', 'pricePerKg', 'addedAt'];
         let visibleMetroColumns;
         try {
             visibleMetroColumns = new Set(JSON.parse(localStorage.getItem('metro-visible-columns-v2')) || defaultMetroColumns);
+            if (visibleMetroColumns.delete('packageSize')) {
+                visibleMetroColumns.add('packageWeight');
+                visibleMetroColumns.add('unitsPerPackage');
+                localStorage.setItem('metro-visible-columns-v2', JSON.stringify([...visibleMetroColumns]));
+            }
         } catch (_) {
             visibleMetroColumns = new Set(defaultMetroColumns);
         }
@@ -371,21 +379,7 @@
             event.preventDefault();
             metroTableScroll.scrollLeft += event.deltaY || event.deltaX;
         }, {passive: false});
-        let metroDragStartX = 0;
-        let metroDragStartScroll = 0;
-        metroTableScroll.addEventListener('mousedown', event => {
-            if (event.button !== 0 || event.target.closest('a, button, input')) return;
-            metroDragStartX = event.clientX;
-            metroDragStartScroll = metroTableScroll.scrollLeft;
-            metroTableScroll.classList.add('dragging');
-        });
-        window.addEventListener('mousemove', event => {
-            if (!metroTableScroll.classList.contains('dragging')) return;
-            metroTableScroll.scrollLeft = metroDragStartScroll - (event.clientX - metroDragStartX);
-        });
-        window.addEventListener('mouseup', () => metroTableScroll.classList.remove('dragging'));
-
-        const metroColumns = [null, 'name', 'packageSize', 'trademark', 'price', 'pricePerKg', 'addedAt'];
+        const metroColumns = [null, 'name', 'packageWeight', 'unitsPerPackage', 'trademark', 'price', 'pricePerKg', 'addedAt'];
         document.querySelectorAll('#metro-price-table th').forEach((header, index) => {
             const key = metroColumns[index];
             if (!key) return;
@@ -400,7 +394,7 @@
 
         function metroComparable(product, key) {
             const value = product[key] || '';
-            if (key === 'price' || key === 'pricePerKg' || key === 'packageSize') {
+            if (key === 'price' || key === 'pricePerKg' || key === 'packageWeight' || key === 'unitsPerPackage') {
                 const number = parseFloat(value.replace(',', '.').replace(/[^0-9.]/g, ''));
                 return Number.isNaN(number) ? Number.MAX_VALUE : number;
             }
@@ -448,7 +442,8 @@
                 }
                 row.appendChild(imageCell);
                 addMetroCell(row, product.name, '', 'name');
-                addMetroCell(row, product.packageSize, '', 'packageSize');
+                addMetroCell(row, product.packageWeight || product.packageSize, '', 'packageWeight');
+                addMetroCell(row, product.unitsPerPackage, '', 'unitsPerPackage');
                 addMetroCell(row, product.trademark, '', 'trademark');
                 addMetroCell(row, product.price, 'price', 'price');
                 addMetroCell(row, product.pricePerKg, 'price-per-kg', 'pricePerKg');

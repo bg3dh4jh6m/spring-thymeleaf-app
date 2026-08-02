@@ -377,7 +377,7 @@ public class MetroScraperService {
 
             String fullName = cleanText(title.text());
             String trademark = extractTrademark(fullName);
-            String weight = extractWeight(fullName);
+            String packageWeight = extractPackageWeight(fullName);
             String name = cleanProductName(fullName, trademark);
             String price = card.select(".price-display-main-row .primary").stream()
                     .map(Element::text)
@@ -400,8 +400,10 @@ public class MetroScraperService {
             product.put("price", price);
             Element bundle = card.selectFirst(".bundle.packaging-type");
             String bundleText = bundle == null ? "" : cleanText(bundle.text());
-            product.put("packageSize", weight.isBlank() ? bundleText
-                    : bundleText.isBlank() ? weight : weight + " • " + bundleText);
+            String unitsPerPackage = extractPackageCount(fullName, bundleText);
+            product.put("packageWeight", packageWeight);
+            product.put("unitsPerPackage", unitsPerPackage);
+            product.put("packageSize", packageWeight + (unitsPerPackage.isBlank() ? "" : " • " + unitsPerPackage));
             product.put("pricePerKg", calculatePricePerKg(price, fullName));
             product.put("imageUrl", image == null ? "" : image.absUrl("src"));
             product.put("productUrl", link == null ? "" : link.absUrl("href"));
@@ -525,6 +527,27 @@ public class MetroScraperService {
             if (text.contains("€")) return text.replace("вкл.ДДС", "").trim();
         }
         return "";
+    }
+
+    String extractPackageWeight(String name) {
+        Matcher multiPack = Pattern.compile(
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+        if (multiPack.find()) return multiPack.group(2) + " " + multiPack.group(3);
+
+        Matcher weight = Pattern.compile(
+                "(?iu)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+        String lastWeight = "";
+        while (weight.find()) lastWeight = weight.group(1) + " " + weight.group(2);
+        return lastWeight;
+    }
+
+    String extractPackageCount(String name, String bundleText) {
+        Matcher multiPack = Pattern.compile(
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g)").matcher(name);
+        if (multiPack.find()) return multiPack.group(1) + " бр.";
+
+        Matcher bundleCount = Pattern.compile("(?iu)^\\s*(\\d+)").matcher(bundleText);
+        return bundleCount.find() ? bundleCount.group(1) + " бр." : "1 бр.";
     }
 
     String extractWeight(String name) {
