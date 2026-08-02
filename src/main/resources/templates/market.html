@@ -56,12 +56,12 @@
         html, body { overflow-x: hidden; }
         .card { max-width: 100%; overflow: hidden; }
         .price-table { min-width: 1100px; }
-        #metro-table-scroll { scrollbar-gutter: stable; padding-bottom: 0.35rem; }
-        #metro-price-table td { user-select: text; cursor: text; }
-        #metro-table-scroll::-webkit-scrollbar { height: 13px; }
-        #metro-table-scroll::-webkit-scrollbar-track { background: #e8ebf4; border-radius: 8px; }
-        #metro-table-scroll::-webkit-scrollbar-thumb { background: #7886c5; border-radius: 8px; border: 2px solid #e8ebf4; }
-        #metro-table-scroll { scrollbar-color: #7886c5 #e8ebf4; scrollbar-width: auto; }
+        #metro-table-scroll, #gourmet-table-scroll { scrollbar-gutter: stable; padding-bottom: 0.35rem; }
+        #metro-price-table td, #gourmet-price-table td { user-select: text; cursor: text; }
+        #metro-table-scroll::-webkit-scrollbar, #gourmet-table-scroll::-webkit-scrollbar { height: 13px; }
+        #metro-table-scroll::-webkit-scrollbar-track, #gourmet-table-scroll::-webkit-scrollbar-track { background: #e8ebf4; border-radius: 8px; }
+        #metro-table-scroll::-webkit-scrollbar-thumb, #gourmet-table-scroll::-webkit-scrollbar-thumb { background: #7886c5; border-radius: 8px; border: 2px solid #e8ebf4; }
+        #metro-table-scroll, #gourmet-table-scroll { scrollbar-color: #7886c5 #e8ebf4; scrollbar-width: auto; }
         .price-table th {
             background: #1a1a2e;
             color: #fff;
@@ -160,32 +160,37 @@
                 <h3>Едро Търговци в България</h3>
                 <p style="color: #888; margin-bottom: 0.5rem;">Изберете търговец за преглед на ценова информация</p>
                 <div class="wholesaler-grid">
-                    <div class="wholesaler-card active" onclick="selectWholesaler('metro')">
+                    <div class="wholesaler-card active" onclick="selectWholesaler('metro', this)">
                         <div class="logo">🏪</div>
                         <h3>Metro.bg</h3>
                         <p>Подправки</p>
                     </div>
-                    <div class="wholesaler-card" onclick="selectWholesaler('kaufland')">
+                    <div class="wholesaler-card" onclick="selectWholesaler('gourmet', this)">
+                        <div class="logo">🌶️</div>
+                        <h3>Цар Бахар</h3>
+                        <p>Пипери, чили, смеси и сушени зеленчуци</p>
+                    </div>
+                    <div class="wholesaler-card" onclick="selectWholesaler('kaufland', this)">
                         <div class="logo">🏬</div>
                         <h3>Kaufland</h3>
                         <p>Подправки, Ядки, Гъби</p>
                     </div>
-                    <div class="wholesaler-card" onclick="selectWholesaler('billa')">
+                    <div class="wholesaler-card" onclick="selectWholesaler('billa', this)">
                         <div class="logo">🛒</div>
                         <h3>Billa</h3>
                         <p>Предстои</p>
                     </div>
-                    <div class="wholesaler-card" onclick="selectWholesaler('lidl')">
+                    <div class="wholesaler-card" onclick="selectWholesaler('lidl', this)">
                         <div class="logo">🛍️</div>
                         <h3>Lidl</h3>
                         <p>Предстои</p>
                     </div>
-                    <div class="wholesaler-card" onclick="selectWholesaler('fantastico')">
+                    <div class="wholesaler-card" onclick="selectWholesaler('fantastico', this)">
                         <div class="logo">🏢</div>
                         <h3>Fantastico</h3>
                         <p>Предстои</p>
                     </div>
-                    <div class="wholesaler-card" onclick="selectWholesaler('cba')">
+                    <div class="wholesaler-card" onclick="selectWholesaler('cba', this)">
                         <div class="logo">🏪</div>
                         <h3>CBA</h3>
                         <p>Предстои</p>
@@ -196,8 +201,9 @@
             <!-- Price Results -->
             <div class="card">
                 <div class="store-tabs">
-                    <div class="store-tab active" onclick="switchTab('metro-tab')">🏪 Metro.bg — Подправки</div>
-                    <div class="store-tab" onclick="switchTab('kaufland-tab')">🏬 Kaufland — Подправки, Ядки, Сушени Плодове, Гъби</div>
+                    <div class="store-tab active" data-panel="metro-tab" onclick="switchTab('metro-tab', this)">🏪 Metro.bg — Подправки</div>
+                    <div class="store-tab" data-panel="gourmet-tab" onclick="switchTab('gourmet-tab', this); startGourmetLoading()">🌶️ Цар Бахар — Gourmet Spice</div>
+                    <div class="store-tab" data-panel="kaufland-tab" onclick="switchTab('kaufland-tab', this)">🏬 Kaufland — Подправки, Ядки, Сушени Плодове, Гъби</div>
                 </div>
 
                 <!-- METRO TAB -->
@@ -268,6 +274,38 @@
                     </div>
                 </div>
 
+                <!-- GOURMET SPICE / ЦАР БАХАР TAB -->
+                <div id="gourmet-tab" class="store-panel">
+                    <p style="color: #888; margin-top: 1rem; font-size: 0.85rem;">
+                        Източник: <a href="https://gourmetspice.bg/" target="_blank" rel="noopener" style="color: #667eea;">gourmetspice.bg</a>
+                        · категории: черен пипер и други натурални подправки, чили, смеси, сушени зеленчуци и сладки подправки
+                    </p>
+                    <div id="gourmet-status" class="info-banner">
+                        Каталогът ще се зареди при избиране на „Цар Бахар“.
+                    </div>
+                    <div id="gourmet-loading" class="loading-indicator">
+                        <div class="spinner"></div>
+                        <p>Зареждам кеширания каталог и проверявам актуалните цени…</p>
+                    </div>
+                    <div id="gourmet-table-scroll" style="overflow-x: auto; max-width: 100%; display: none;">
+                        <table id="gourmet-price-table" class="price-table">
+                            <thead>
+                                <tr>
+                                    <th data-key="catalogCode">ХОРЕМАГ №</th>
+                                    <th data-key="supplierCode">Доставчик №</th>
+                                    <th>Снимка</th>
+                                    <th data-key="name">Продукт</th>
+                                    <th data-key="category">Категория</th>
+                                    <th data-key="packageOptions">Разфасовки</th>
+                                    <th data-key="priceMin">Цена</th>
+                                    <th data-key="addedAt">Проверено на</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gourmet-products-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- KAUFLAND TAB -->
                 <div id="kaufland-tab" class="store-panel">
                     <p style="color: #888; margin-top: 1rem; font-size: 0.85rem;">
@@ -324,6 +362,7 @@
     </div>
 
     <script>
+        let activeWholesaler = 'metro';
         let metroProducts = [];
         let metroSortKey = 'name';
         let metroSortDirection = 1;
@@ -454,6 +493,10 @@
         }
 
         function pollMetroPrices() {
+            if (activeWholesaler !== 'metro') {
+                window.setTimeout(pollMetroPrices, 2000);
+                return;
+            }
             fetch('/api/metro-prices', {cache: 'no-store'})
                 .then(response => response.json())
                 .then(data => {
@@ -473,18 +516,147 @@
         window.setTimeout(pollMetroPrices, 250);
         applyMetroColumnVisibility();
 
-        function switchTab(tabId) {
+        let gourmetProducts = [];
+        let gourmetSortKey = 'name';
+        let gourmetSortDirection = 1;
+        let gourmetLoadingStarted = false;
+
+        function gourmetComparable(product, key) {
+            if (key === 'priceMin') return Number(product.priceMin || Number.MAX_VALUE);
+            return (product[key] || '').toLocaleLowerCase('bg');
+        }
+
+        function addGourmetCell(row, text, className) {
+            const cell = document.createElement('td');
+            cell.textContent = text || '—';
+            if (className) cell.className = className;
+            row.appendChild(cell);
+            return cell;
+        }
+
+        function renderGourmetRows() {
+            const body = document.getElementById('gourmet-products-body');
+            const sorted = [...gourmetProducts].sort((left, right) => {
+                const a = gourmetComparable(left, gourmetSortKey);
+                const b = gourmetComparable(right, gourmetSortKey);
+                return (a < b ? -1 : a > b ? 1 : 0) * gourmetSortDirection;
+            });
+            body.replaceChildren();
+            sorted.forEach(product => {
+                const row = document.createElement('tr');
+                addGourmetCell(row, product.catalogCode);
+                addGourmetCell(row, product.supplierCode);
+
+                const imageCell = document.createElement('td');
+                const image = document.createElement('img');
+                image.src = product.imageUrl || '/images/product-placeholder.svg';
+                image.alt = product.name || 'Продукт';
+                image.className = 'product-img';
+                image.loading = 'lazy';
+                image.onerror = () => {
+                    image.onerror = null;
+                    image.src = '/images/product-placeholder.svg';
+                };
+                imageCell.appendChild(image);
+                row.appendChild(imageCell);
+
+                const nameCell = document.createElement('td');
+                const link = document.createElement('a');
+                link.textContent = product.name || '—';
+                link.href = product.productUrl || '#';
+                link.target = '_blank';
+                link.rel = 'noopener';
+                link.style.color = '#34375a';
+                nameCell.appendChild(link);
+                row.appendChild(nameCell);
+
+                addGourmetCell(row, product.category);
+                addGourmetCell(row, product.packageOptions);
+                addGourmetCell(row, product.price, 'price');
+                addGourmetCell(row, product.addedAt);
+                body.appendChild(row);
+            });
+            document.getElementById('gourmet-table-scroll').style.display = sorted.length ? 'block' : 'none';
+        }
+
+        document.querySelectorAll('#gourmet-price-table th[data-key]').forEach(header => {
+            header.classList.add('sortable-column');
+            header.title = 'Натисни за сортиране';
+            header.addEventListener('click', () => {
+                const key = header.dataset.key;
+                gourmetSortDirection = gourmetSortKey === key ? -gourmetSortDirection : 1;
+                gourmetSortKey = key;
+                renderGourmetRows();
+            });
+        });
+
+        const gourmetTableScroll = document.getElementById('gourmet-table-scroll');
+        gourmetTableScroll.addEventListener('wheel', event => {
+            if (!event.shiftKey) return;
+            event.preventDefault();
+            gourmetTableScroll.scrollLeft += event.deltaY || event.deltaX;
+        }, {passive: false});
+
+        function startGourmetLoading() {
+            if (gourmetLoadingStarted) return;
+            gourmetLoadingStarted = true;
+            pollGourmetPrices();
+        }
+
+        function pollGourmetPrices() {
+            if (activeWholesaler !== 'gourmet') {
+                gourmetLoadingStarted = false;
+                return;
+            }
+            fetch('/api/gourmet-prices', {cache: 'no-store'})
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.products.length > 0) {
+                        gourmetProducts = data.products;
+                        renderGourmetRows();
+                        document.getElementById('gourmet-loading').style.display = 'none';
+                    }
+                    const status = document.getElementById('gourmet-status');
+                    status.textContent = data.products.length
+                        ? `🌶️ Цар Бахар: ${data.products.length} продукта${data.refreshing ? ' — показвам кеша и обновявам…' : ' — актуално'}`
+                        : (data.error ? `Цар Бахар временно не отговаря: ${data.error}` : 'Свързвам се с каталога на Цар Бахар…');
+                    if (activeWholesaler === 'gourmet') {
+                        window.setTimeout(pollGourmetPrices, data.refreshing ? 1000 : 30000);
+                    } else {
+                        gourmetLoadingStarted = false;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('gourmet-status').textContent = `Каталогът временно не е достъпен: ${error.message}`;
+                    if (activeWholesaler === 'gourmet') window.setTimeout(pollGourmetPrices, 5000);
+                });
+        }
+
+        function switchTab(tabId, tabElement) {
             document.querySelectorAll('.store-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.store-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            const selectedTab = tabElement || document.querySelector(`.store-tab[data-panel="${tabId}"]`);
+            selectedTab?.classList.add('active');
+            if (tabId === 'gourmet-tab') {
+                activeWholesaler = 'gourmet';
+                startGourmetLoading();
+            } else if (tabId === 'metro-tab') {
+                activeWholesaler = 'metro';
+            } else if (tabId === 'kaufland-tab') {
+                activeWholesaler = 'kaufland';
+            }
         }
 
-        function selectWholesaler(name) {
+        function selectWholesaler(name, card) {
             document.querySelectorAll('.wholesaler-card').forEach(c => c.classList.remove('active'));
-            event.target.closest('.wholesaler-card').classList.add('active');
+            card.classList.add('active');
 
             if (name === 'metro') switchTab('metro-tab');
+            else if (name === 'gourmet') switchTab('gourmet-tab');
             else if (name === 'kaufland') switchTab('kaufland-tab');
             else alert('Интеграцията с ' + name.toUpperCase() + ' предстои да бъде добавена.');
         }

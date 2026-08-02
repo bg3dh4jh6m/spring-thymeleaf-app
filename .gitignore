@@ -2,10 +2,12 @@
 /app-run.log
 /app-run.err
 *.log
+.env
 
 # Local scraper cache
 /data/metro-products.json
 /data/metro-images/
+/data/catalog*
 
 # Maven build output
 /target/

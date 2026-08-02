@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.service.MetroScraperService;
+import com.example.demo.service.GourmetSpiceService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
@@ -23,6 +24,12 @@ import java.time.Duration;
 
 @Controller
 public class HomeController {
+
+    private final GourmetSpiceService gourmetSpiceService;
+
+    public HomeController(GourmetSpiceService gourmetSpiceService) {
+        this.gourmetSpiceService = gourmetSpiceService;
+    }
 
     @GetMapping("/")
     public String home(Model model) {
@@ -75,6 +82,16 @@ public class HomeController {
                 "products", products,
                 "refreshing", MetroScraperService.isRefreshing(),
                 "error", MetroScraperService.getLastError());
+    }
+
+    @GetMapping("/api/gourmet-prices")
+    @ResponseBody
+    public Map<String, Object> gourmetPrices() {
+        List<Map<String, String>> products = gourmetSpiceService.getCachedProductsAndRefresh();
+        return Map.of(
+                "products", products,
+                "refreshing", gourmetSpiceService.isRefreshing(),
+                "error", gourmetSpiceService.getLastError());
     }
 
     @GetMapping("/api/metro-images/{fileName:.+}")

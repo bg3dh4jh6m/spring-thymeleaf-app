@@ -63,18 +63,27 @@ public class MetroScraperService {
         long retryInterval = cachedProducts.isEmpty() ? EMPTY_RETRY_INTERVAL_MS : REFRESH_INTERVAL_MS;
         if (now - lastRefreshStartedAt >= retryInterval && REFRESHING.compareAndSet(false, true)) {
             lastRefreshStartedAt = now;
-            CompletableFuture.runAsync(() -> {
-                try {
-                    List<Map<String, String>> fresh = new MetroScraperService().scrapeSpicePrices();
-                    if (!fresh.isEmpty()) publishSnapshot(fresh);
-                } catch (Exception e) {
-                    lastError = e.getClass().getSimpleName() + ": " + e.getMessage();
-                } finally {
-                    REFRESHING.set(false);
-                }
-            });
+            CompletableFuture.runAsync(MetroScraperService::refreshWhileLocked);
         }
         return cachedProducts;
+    }
+
+    /** Runs a supplier scan now, unless another METRO scan is already active. */
+    public static void refreshNow() {
+        if (!REFRESHING.compareAndSet(false, true)) return;
+        lastRefreshStartedAt = System.currentTimeMillis();
+        refreshWhileLocked();
+    }
+
+    private static void refreshWhileLocked() {
+        try {
+            List<Map<String, String>> fresh = new MetroScraperService().scrapeSpicePrices();
+            if (!fresh.isEmpty()) publishSnapshot(fresh);
+        } catch (Exception e) {
+            lastError = e.getClass().getSimpleName() + ": " + e.getMessage();
+        } finally {
+            REFRESHING.set(false);
+        }
     }
 
     public static boolean isRefreshing() {
