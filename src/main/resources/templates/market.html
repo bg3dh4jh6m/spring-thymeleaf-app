@@ -5,24 +5,304 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">Market</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .wholesaler-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .wholesaler-card {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .wholesaler-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        .wholesaler-card .logo { font-size: 2.2rem; margin-bottom: 0.4rem; }
+        .wholesaler-card h3 { color: #333; font-size: 1rem; margin-bottom: 0.15rem; }
+        .wholesaler-card p { color: #888; font-size: 0.8rem; }
+        .wholesaler-card.active { border-color: #667eea; background: #f0f2ff; }
+
+        .store-tabs { display: flex; gap: 0; margin-bottom: 0; }
+        .store-tab {
+            padding: 0.75rem 1.5rem;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .store-tab:hover { background: #eef; color: #667eea; }
+        .store-tab.active { background: #fff; color: #667eea; border-bottom: 2px solid #fff; margin-bottom: -1px; }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+        .price-table th {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 0.65rem 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .price-table td {
+            padding: 0.65rem 0.5rem;
+            border-bottom: 1px solid #eee;
+            color: #444;
+            vertical-align: middle;
+        }
+        .price-table tr:hover td { background: #f8f8ff; }
+        .price-table .price {
+            font-weight: 700;
+            color: #667eea;
+            white-space: nowrap;
+        }
+        .price-table .price-per-kg {
+            color: #e74c3c;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .price-table .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.8rem;
+        }
+        .loading-indicator {
+            text-align: center;
+            padding: 2rem;
+            color: #888;
+        }
+        .loading-indicator .spinner {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 0.5rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-msg {
+            background: #fff3f3;
+            color: #c0392b;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #c0392b;
+            margin-top: 1rem;
+        }
+        .info-banner {
+            background: #f0f4ff;
+            color: #444;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+        .product-img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: #f5f5f5;
+        }
+        .store-panel { display: none; }
+        .store-panel.active { display: block; }
+    </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <aside class="sidebar" th:replace="~{fragments/sidebar :: sidebar(currentPage='market')}"></aside>
 
-    <!-- Main Content -->
     <div class="main-content">
         <header class="content-header">
             <h1 th:text="${title}">Market</h1>
         </header>
 
         <div class="content-body">
-            <div class="card empty-state">
-                <div class="icon">🏪</div>
-                <h2 th:text="${title}">Market</h2>
-                <p>This section is coming soon.</p>
+            <!-- Wholesaler Grid -->
+            <div class="card">
+                <h3>Едро Търговци в България</h3>
+                <p style="color: #888; margin-bottom: 0.5rem;">Изберете търговец за преглед на ценова информация</p>
+                <div class="wholesaler-grid">
+                    <div class="wholesaler-card active" onclick="selectWholesaler('metro')">
+                        <div class="logo">🏪</div>
+                        <h3>Metro.bg</h3>
+                        <p>Подправки</p>
+                    </div>
+                    <div class="wholesaler-card" onclick="selectWholesaler('kaufland')">
+                        <div class="logo">🏬</div>
+                        <h3>Kaufland</h3>
+                        <p>Подправки, Ядки, Гъби</p>
+                    </div>
+                    <div class="wholesaler-card" onclick="selectWholesaler('billa')">
+                        <div class="logo">🛒</div>
+                        <h3>Billa</h3>
+                        <p>Предстои</p>
+                    </div>
+                    <div class="wholesaler-card" onclick="selectWholesaler('lidl')">
+                        <div class="logo">🛍️</div>
+                        <h3>Lidl</h3>
+                        <p>Предстои</p>
+                    </div>
+                    <div class="wholesaler-card" onclick="selectWholesaler('fantastico')">
+                        <div class="logo">🏢</div>
+                        <h3>Fantastico</h3>
+                        <p>Предстои</p>
+                    </div>
+                    <div class="wholesaler-card" onclick="selectWholesaler('cba')">
+                        <div class="logo">🏪</div>
+                        <h3>CBA</h3>
+                        <p>Предстои</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Results -->
+            <div class="card">
+                <div class="store-tabs">
+                    <div class="store-tab active" onclick="switchTab('metro-tab')">🏪 Metro.bg — Подправки</div>
+                    <div class="store-tab" onclick="switchTab('kaufland-tab')">🏬 Kaufland — Подправки, Ядки, Сушени Плодове, Гъби</div>
+                </div>
+
+                <!-- METRO TAB -->
+                <div id="metro-tab" class="store-panel active">
+                    <p style="color: #888; margin-top: 1rem; font-size: 0.85rem;">
+                        Източник:
+                        <a href="https://shop.metro.bg/shop/category/%D1%85%D1%80%D0%B0%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D0%BD%D0%B8-%D1%81%D1%82%D0%BE%D0%BA%D0%B8/%D0%BF%D0%B0%D0%BA%D0%B5%D1%82%D0%B8%D1%80%D0%B0%D0%BD%D0%B8-%D1%85%D1%80%D0%B0%D0%BD%D0%B8/%D0%BE%D0%B2%D0%BA%D1%83%D1%81%D0%B8%D1%82%D0%B5%D0%BB%D0%B8-%D0%BF%D0%BE%D0%B4%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B8-%D0%B8-%D1%81%D0%BE%D1%81%D0%BE%D0%B2%D0%B5/%D0%BF%D0%BE%D0%B4%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B8"
+                           target="_blank" style="color: #667eea;">shop.metro.bg</a>
+                    </p>
+
+                    <div th:if="${metroError != null}" class="error-msg">
+                        <strong>Грешка (Metro):</strong> <span th:text="${metroError}">error</span>
+                    </div>
+
+                    <div th:if="${metroError == null && metroProducts != null && !metroProducts.isEmpty()}" class="info-banner">
+                        📋 Metro.bg: намерени са <strong th:text="${#lists.size(metroProducts)}">0</strong> продукта
+                    </div>
+
+                    <div th:if="${metroProducts == null || metroProducts.isEmpty()}" class="loading-indicator">
+                        <div class="spinner"></div>
+                        <p>Зареждане на цени от Metro.bg...</p>
+                    </div>
+
+                    <div th:if="${metroProducts != null && !metroProducts.isEmpty()}" style="overflow-x: auto;">
+                        <table class="price-table">
+                            <thead>
+                                <tr>
+                                    <th>Снимка</th>
+                                    <th>Име на продукта</th>
+                                    <th>Разфасовка</th>
+                                    <th>Марка</th>
+                                    <th>Цена</th>
+                                    <th>Цена/кг</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${metroProducts}">
+                                    <td>
+                                        <img th:if="${p.imageUrl != null && !p.imageUrl.isEmpty()}" th:src="${p.imageUrl}" class="product-img">
+                                        <span th:unless="${p.imageUrl != null && !p.imageUrl.isEmpty()}" style="font-size:1.3rem">📦</span>
+                                    </td>
+                                    <td th:text="${p.name}">—</td>
+                                    <td th:text="${p.packageSize} ?: '—'">—</td>
+                                    <td th:text="${p.trademark} ?: '—'">—</td>
+                                    <td class="price" th:text="${p.price}">—</td>
+                                    <td class="price-per-kg" th:text="${p.pricePerKg} ?: '—'">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- KAUFLAND TAB -->
+                <div id="kaufland-tab" class="store-panel">
+                    <p style="color: #888; margin-top: 1rem; font-size: 0.85rem;">
+                        Източник:
+                        <a href="https://www.kaufland.bg/aktualni-predlozheniya/oferti.html" target="_blank" style="color: #667eea;">kaufland.bg — Актуални Оферти</a>
+                    </p>
+
+                    <div th:if="${kauflandError != null}" class="error-msg">
+                        <strong>Грешка (Kaufland):</strong> <span th:text="${kauflandError}">error</span>
+                    </div>
+
+                    <div th:if="${kauflandError == null && kauflandProducts != null && !kauflandProducts.isEmpty()}" class="info-banner">
+                        📋 Kaufland: намерени са <strong th:text="${#lists.size(kauflandProducts)}">0</strong> продукта
+                        (подправки, ядки, сушени плодове, гъби)
+                    </div>
+
+                    <div th:if="${kauflandProducts == null || kauflandProducts.isEmpty()}" class="loading-indicator">
+                        <div class="spinner"></div>
+                        <p>Зареждане на цени от Kaufland.bg...</p>
+                    </div>
+
+                    <div th:if="${kauflandProducts != null && !kauflandProducts.isEmpty()}" style="overflow-x: auto;">
+                        <table class="price-table">
+                            <thead>
+                                <tr>
+                                    <th>Снимка</th>
+                                    <th>Име на продукта</th>
+                                    <th>Описание</th>
+                                    <th>Цена</th>
+                                    <th>Стара цена</th>
+                                    <th>Ед. цена</th>
+                                    <th>Базова цена</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${kauflandProducts}">
+                                    <td>
+                                        <img th:if="${p.imageUrl != null && !p.imageUrl.isEmpty()}" th:src="${p.imageUrl}" class="product-img">
+                                        <span th:unless="${p.imageUrl != null && !p.imageUrl.isEmpty()}" style="font-size:1.3rem">📦</span>
+                                    </td>
+                                    <td th:text="${p.name}">—</td>
+                                    <td th:text="${p.description} ?: '—'">—</td>
+                                    <td class="price" th:text="${p.price}">—</td>
+                                    <td class="old-price" th:text="${p.oldPrice} ?: ''">—</td>
+                                    <td th:text="${p.unitPrice} ?: '—'">—</td>
+                                    <td th:text="${p.basePrice} ?: '—'">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.store-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.store-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function selectWholesaler(name) {
+            document.querySelectorAll('.wholesaler-card').forEach(c => c.classList.remove('active'));
+            event.target.closest('.wholesaler-card').classList.add('active');
+
+            if (name === 'metro') switchTab('metro-tab');
+            else if (name === 'kaufland') switchTab('kaufland-tab');
+            else alert('Интеграцията с ' + name.toUpperCase() + ' предстои да бъде добавена.');
+        }
+    </script>
 </body>
 </html>

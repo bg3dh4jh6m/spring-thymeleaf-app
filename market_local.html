@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">Market</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Market</title>
+    <link rel="stylesheet" href="/css/style.css">
     <style>
         .wholesaler-grid {
             display: grid;
@@ -129,11 +129,50 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar" th:replace="~{fragments/sidebar :: sidebar(currentPage='market')}"></aside>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            📊 <span>Dashboard</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="/">
+                    <span class="icon">🏠</span> Home
+                </a>
+            </li>
+            <li>
+                <a href="/market" class="active">
+                    <span class="icon">🏪</span> Market
+                </a>
+            </li>
+            <li>
+                <a href="/sales">
+                    <span class="icon">💰</span> Sales
+                </a>
+            </li>
+            <li>
+                <a href="/stock">
+                    <span class="icon">📦</span> Stock
+                </a>
+            </li>
+            <li>
+                <a href="/shop">
+                    <span class="icon">🛒</span> Shop
+                </a>
+            </li>
+            <li>
+                <a href="/about">
+                    <span class="icon">ℹ️</span> About
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            &copy; 2026 Spring Boot Demo
+        </div>
+    </aside>
 
     <div class="main-content">
         <header class="content-header">
-            <h1 th:text="${title}">Market</h1>
+            <h1>Market</h1>
         </header>
 
         <div class="content-body">
@@ -190,20 +229,15 @@
                            target="_blank" style="color: #667eea;">shop.metro.bg</a>
                     </p>
 
-                    <div th:if="${metroError != null}" class="error-msg">
-                        <strong>Грешка (Metro):</strong> <span th:text="${metroError}">error</span>
+                    
+
+                    <div class="info-banner">
+                        📋 Metro.bg: намерени са <strong>1</strong> продукта
                     </div>
 
-                    <div th:if="${metroError == null && metroProducts != null && !metroProducts.isEmpty()}" class="info-banner">
-                        📋 Metro.bg: намерени са <strong th:text="${#lists.size(metroProducts)}">0</strong> продукта
-                    </div>
+                    
 
-                    <div th:if="${metroProducts == null || metroProducts.isEmpty()}" class="loading-indicator">
-                        <div class="spinner"></div>
-                        <p>Зареждане на цени от Metro.bg...</p>
-                    </div>
-
-                    <div th:if="${metroProducts != null && !metroProducts.isEmpty()}" style="overflow-x: auto;">
+                    <div style="overflow-x: auto;">
                         <table class="price-table">
                             <thead>
                                 <tr>
@@ -216,16 +250,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="p : ${metroProducts}">
+                                <tr>
                                     <td>
-                                        <img th:if="${p.imageUrl != null && !p.imageUrl.isEmpty()}" th:src="${p.imageUrl}" class="product-img">
-                                        <span th:unless="${p.imageUrl != null && !p.imageUrl.isEmpty()}" style="font-size:1.3rem">📦</span>
+                                        
+                                        <span style="font-size:1.3rem">📦</span>
                                     </td>
-                                    <td th:text="${p.name}">—</td>
-                                    <td th:text="${p.packageSize} ?: '—'">—</td>
-                                    <td th:text="${p.trademark} ?: '—'">—</td>
-                                    <td class="price" th:text="${p.price}">—</td>
-                                    <td class="price-per-kg" th:text="${p.pricePerKg} ?: '—'">—</td>
+                                    <td>Неуспешно извличане на данни от Metro.bg</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="price">Сайтът блокира автоматичния достъп. Опитайте отново по-късно.</td>
+                                    <td class="price-per-kg"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -239,21 +273,16 @@
                         <a href="https://www.kaufland.bg/aktualni-predlozheniya/oferti.html" target="_blank" style="color: #667eea;">kaufland.bg — Актуални Оферти</a>
                     </p>
 
-                    <div th:if="${kauflandError != null}" class="error-msg">
-                        <strong>Грешка (Kaufland):</strong> <span th:text="${kauflandError}">error</span>
-                    </div>
+                    
 
-                    <div th:if="${kauflandError == null && kauflandProducts != null && !kauflandProducts.isEmpty()}" class="info-banner">
-                        📋 Kaufland: намерени са <strong th:text="${#lists.size(kauflandProducts)}">0</strong> продукта
+                    <div class="info-banner">
+                        📋 Kaufland: намерени са <strong>10</strong> продукта
                         (подправки, ядки, сушени плодове, гъби)
                     </div>
 
-                    <div th:if="${kauflandProducts == null || kauflandProducts.isEmpty()}" class="loading-indicator">
-                        <div class="spinner"></div>
-                        <p>Зареждане на цени от Kaufland.bg...</p>
-                    </div>
+                    
 
-                    <div th:if="${kauflandProducts != null && !kauflandProducts.isEmpty()}" style="overflow-x: auto;">
+                    <div style="overflow-x: auto;">
                         <table class="price-table">
                             <thead>
                                 <tr>
@@ -267,17 +296,125 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="p : ${kauflandProducts}">
+                                <tr>
                                     <td>
-                                        <img th:if="${p.imageUrl != null && !p.imageUrl.isEmpty()}" th:src="${p.imageUrl}" class="product-img">
-                                        <span th:unless="${p.imageUrl != null && !p.imageUrl.isEmpty()}" style="font-size:1.3rem">📦</span>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/20282879_P" class="product-img">
+                                        
                                     </td>
-                                    <td th:text="${p.name}">—</td>
-                                    <td th:text="${p.description} ?: '—'">—</td>
-                                    <td class="price" th:text="${p.price}">—</td>
-                                    <td class="old-price" th:text="${p.oldPrice} ?: ''">—</td>
-                                    <td th:text="${p.unitPrice} ?: '—'">—</td>
-                                    <td th:text="${p.basePrice} ?: '—'">—</td>
+                                    <td>Орехите</td>
+                                    <td>Шпек различни видове</td>
+                                    <td class="price">7,49 €</td>
+                                    <td class="old-price">11,99 €</td>
+                                    <td>600 г</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/09700060_P-2" class="product-img">
+                                        
+                                    </td>
+                                    <td>Български кайсии</td>
+                                    <td>Клас: I</td>
+                                    <td class="price">1,45 €</td>
+                                    <td class="old-price">2,87 €</td>
+                                    <td>кг</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/00110411_P" class="product-img">
+                                        
+                                    </td>
+                                    <td>Боровинки</td>
+                                    <td>Клас: I</td>
+                                    <td class="price">3,15 €</td>
+                                    <td class="old-price">5,36 €</td>
+                                    <td>400 г</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/20854097_P" class="product-img">
+                                        
+                                    </td>
+                                    <td>Кокосов орех</td>
+                                    <td>за пиене</td>
+                                    <td class="price">1,99 €</td>
+                                    <td class="old-price">3,57 €</td>
+                                    <td>бр.</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/5202575013064_BG_P" class="product-img">
+                                        
+                                    </td>
+                                    <td>Орехите Deli</td>
+                                    <td>Пуешко филе слайс</td>
+                                    <td class="price">2,35 €</td>
+                                    <td class="old-price">3,65 €</td>
+                                    <td>120 г</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/238_00029708B_P" class="product-img">
+                                        
+                                    </td>
+                                    <td>Орехите</td>
+                                    <td>Луканка + Сушеница Чардака</td>
+                                    <td class="price">7,45 €</td>
+                                    <td class="old-price"></td>
+                                    <td>210 + 180 г</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/238_00094375_P-1" class="product-img">
+                                        
+                                    </td>
+                                    <td>Орехите</td>
+                                    <td>Луканка, Бабек или Салам Амбарица</td>
+                                    <td class="price">1,69 €</td>
+                                    <td class="old-price">3,39 €</td>
+                                    <td>80 - 100 г</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/00065171_P" class="product-img">
+                                        
+                                    </td>
+                                    <td>Орехите</td>
+                                    <td>Сушеница различни видове</td>
+                                    <td class="price">3,69 €</td>
+                                    <td class="old-price">5,49 €</td>
+                                    <td>160 - 180 г</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/20282879_P" class="product-img">
+                                        
+                                    </td>
+                                    <td>Орехите</td>
+                                    <td>Шпек различни видове</td>
+                                    <td class="price">7,49 €</td>
+                                    <td class="old-price">11,99 €</td>
+                                    <td>600 г</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="https://kaufland.media.schwarz/is/image/schwarz/238_00094375_P-1" class="product-img">
+                                        
+                                    </td>
+                                    <td>Орехите</td>
+                                    <td>Луканка, Бабек или Салам Амбарица</td>
+                                    <td class="price">1,69 €</td>
+                                    <td class="old-price">3,39 €</td>
+                                    <td>80 - 100 г</td>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>

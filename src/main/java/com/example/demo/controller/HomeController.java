@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.service.KauflandScraperService;
+import com.example.demo.service.MetroScraperService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class HomeController {
@@ -40,6 +43,25 @@ public class HomeController {
     @GetMapping("/market")
     public String market(Model model) {
         model.addAttribute("title", "Market");
+
+        // Metro.bg spice prices
+        try {
+            MetroScraperService metroScraper = new MetroScraperService();
+            List<Map<String, String>> metroProducts = metroScraper.scrapeSpicePrices();
+            model.addAttribute("metroProducts", metroProducts);
+        } catch (Exception e) {
+            model.addAttribute("metroError", e.getMessage());
+        }
+
+        // Kaufland.bg offers (spices, dried fruits, nuts, mushrooms)
+        try {
+            KauflandScraperService kauflandScraper = new KauflandScraperService();
+            List<Map<String, String>> kauflandProducts = kauflandScraper.scrapeProducts();
+            model.addAttribute("kauflandProducts", kauflandProducts);
+        } catch (Exception e) {
+            model.addAttribute("kauflandError", e.getMessage());
+        }
+
         return "market";
     }
 
