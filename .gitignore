@@ -1,0 +1,11 @@
+# Runtime output
+/app-run.log
+/app-run.err
+*.log
+
+# Local scraper cache
+/data/metro-products.json
+/data/metro-images/
+
+# Maven build output
+/target/

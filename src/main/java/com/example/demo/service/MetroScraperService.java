@@ -27,6 +27,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,8 +43,14 @@ import java.util.regex.Pattern;
 public class MetroScraperService {
 
     private static final Path CACHE_FILE = Path.of("data", "metro-products.json");
+    public static final Path IMAGE_CACHE_DIR = Path.of("data", "metro-images");
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final AtomicBoolean REFRESHING = new AtomicBoolean(false);
+    private static final AtomicBoolean IMAGES_CACHING = new AtomicBoolean(false);
+    private static final HttpClient HTTP = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .build();
     private static volatile List<Map<String, String>> cachedProducts = loadCache();
     private static volatile long lastRefreshStartedAt = 0;
     private static volatile String lastError = "";
@@ -81,6 +93,7 @@ public class MetroScraperService {
         if (validProducts.isEmpty()) return;
         cachedProducts = List.copyOf(validProducts);
         saveCache(validProducts);
+        cacheImagesAsync(validProducts);
         lastError = "";
     }
 
@@ -98,6 +111,71 @@ public class MetroScraperService {
             Files.createDirectories(CACHE_FILE.getParent());
             JSON.writerWithDefaultPrettyPrinter().writeValue(CACHE_FILE.toFile(), products);
         } catch (Exception ignored) { }
+    }
+
+    private static void cacheImagesAsync(List<Map<String, String>> snapshot) {
+        if (!IMAGES_CACHING.compareAndSet(false, true)) return;
+        CompletableFuture.runAsync(() -> {
+            Map<String, String> cachedUrls = new HashMap<>();
+            try {
+                Files.createDirectories(IMAGE_CACHE_DIR);
+                for (Map<String, String> product : snapshot) {
+                    String remoteUrl = product.getOrDefault("imageUrl", "");
+                    if (!remoteUrl.startsWith("http")) continue;
+                    String localUrl = downloadImage(remoteUrl);
+                    if (!localUrl.isBlank()) {
+                        cachedUrls.put(productCacheKey(product), localUrl);
+                    }
+                }
+
+                if (!cachedUrls.isEmpty()) {
+                    synchronized (MetroScraperService.class) {
+                        List<Map<String, String>> updated = cachedProducts.stream().map(product -> {
+                            Map<String, String> copy = new LinkedHashMap<>(product);
+                            String localUrl = cachedUrls.get(productCacheKey(product));
+                            if (localUrl != null) copy.put("imageUrl", localUrl);
+                            return copy;
+                        }).toList();
+                        cachedProducts = List.copyOf(updated);
+                        saveCache(updated);
+                    }
+                }
+            } catch (Exception ignored) {
+                // Remote images are optional; keep their original URLs on failure.
+            } finally {
+                IMAGES_CACHING.set(false);
+            }
+        });
+    }
+
+    private static String downloadImage(String remoteUrl) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(remoteUrl))
+                    .timeout(Duration.ofSeconds(20))
+                    .header("User-Agent", "Mozilla/5.0")
+                    .GET()
+                    .build();
+            HttpResponse<byte[]> response = HTTP.send(request, HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() < 200 || response.statusCode() >= 300 || response.body().length == 0) return "";
+
+            String contentType = response.headers().firstValue("Content-Type").orElse("image/jpeg");
+            String extension = contentType.contains("png") ? ".png"
+                    : contentType.contains("webp") ? ".webp"
+                    : contentType.contains("gif") ? ".gif" : ".jpg";
+            String hash = HexFormat.of().formatHex(
+                    MessageDigest.getInstance("SHA-256").digest(remoteUrl.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            String fileName = hash + extension;
+            Path target = IMAGE_CACHE_DIR.resolve(fileName);
+            if (!Files.exists(target)) Files.write(target, response.body());
+            return "/api/metro-images/" + fileName;
+        } catch (Exception ignored) {
+            return "";
+        }
+    }
+
+    private static String productCacheKey(Map<String, String> product) {
+        String productUrl = product.getOrDefault("productUrl", "");
+        return productUrl.isBlank() ? product.getOrDefault("fullName", product.getOrDefault("name", "")) : productUrl;
     }
 
     private static final String METRO_SPICE_URL =
@@ -252,23 +330,40 @@ public class MetroScraperService {
         } catch (Exception ignored) { }
 
         for (int page = 0; page < 12 && collected.size() < MAX_PRODUCTS; page++) {
-            List<WebElement> buttons = driver.findElements(By.cssSelector("a.mfcss_load-more-articles"));
+            List<WebElement> buttons = findLoadMoreButtons(driver);
             if (buttons.isEmpty() || !buttons.get(0).isDisplayed()) break;
 
-            int previousCardCount = driver.findElements(By.cssSelector(".sd-articlecard")).size();
+            int previousProductCount = collected.size();
             try {
                 WebElement button = buttons.get(0);
                 ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
-                        "arguments[0].scrollIntoView({block:'center'}); arguments[0].click();", button);
-                wait.until(d -> d.findElements(By.cssSelector(".sd-articlecard")).size() > previousCardCount);
+                        "arguments[0].scrollIntoView({block:'center'});", button);
+                wait.until(ExpectedConditions.elementToBeClickable(button)).click();
+                wait.until(d -> countNewRenderedProducts(d, collected) > 0);
                 collectRenderedCards(driver, collected);
                 publishSnapshot(new ArrayList<>(collected.values()));
+                if (collected.size() <= previousProductCount) break;
             } catch (Exception ignored) {
                 break;
             }
         }
 
         return new ArrayList<>(collected.values());
+    }
+
+    private List<WebElement> findLoadMoreButtons(WebDriver driver) {
+        List<WebElement> buttons = driver.findElements(By.cssSelector("a.mfcss_load-more-articles"));
+        if (!buttons.isEmpty()) return buttons;
+        return driver.findElements(By.xpath("//a[contains(., 'Покажи още')]"));
+    }
+
+    private long countNewRenderedProducts(WebDriver driver,
+                                          LinkedHashMap<String, Map<String, String>> collected) {
+        Document document = Jsoup.parse(driver.getPageSource(), METRO_SPICE_URL);
+        return document.select(".sd-articlecard a.title").stream()
+                .map(element -> element.attr("href"))
+                .filter(key -> !key.isBlank() && !collected.containsKey(key))
+                .count();
     }
 
     private void collectRenderedCards(WebDriver driver,
@@ -280,7 +375,10 @@ public class MetroScraperService {
             Element title = card.selectFirst("a.title h4");
             if (title == null || title.text().isBlank()) continue;
 
-            String name = cleanText(title.text());
+            String fullName = cleanText(title.text());
+            String trademark = extractTrademark(fullName);
+            String weight = extractWeight(fullName);
+            String name = cleanProductName(fullName, trademark);
             String price = card.select(".price-display-main-row .primary").stream()
                     .map(Element::text)
                     .map(this::cleanText)
@@ -293,17 +391,21 @@ public class MetroScraperService {
 
             Element link = card.selectFirst("a.title");
             Element image = card.selectFirst("img");
-            String key = link == null ? name : link.attr("href");
+            String key = link == null ? fullName : link.attr("href");
 
             Map<String, String> previous = collected.get(key);
             Map<String, String> product = new LinkedHashMap<>();
             product.put("name", name);
+            product.put("fullName", fullName);
             product.put("price", price);
-            product.put("packageSize", extractWeight(name));
-            product.put("pricePerKg", calculatePricePerKg(price, name));
+            Element bundle = card.selectFirst(".bundle.packaging-type");
+            String bundleText = bundle == null ? "" : cleanText(bundle.text());
+            product.put("packageSize", weight.isBlank() ? bundleText
+                    : bundleText.isBlank() ? weight : weight + " • " + bundleText);
+            product.put("pricePerKg", calculatePricePerKg(price, fullName));
             product.put("imageUrl", image == null ? "" : image.absUrl("src"));
             product.put("productUrl", link == null ? "" : link.absUrl("href"));
-            product.put("trademark", extractTrademark(name));
+            product.put("trademark", trademark);
             product.put("manufacturer", "");
             product.put("addedAt", previous == null
                     ? findCachedAddedAt(name, addedAt)
@@ -326,6 +428,19 @@ public class MetroScraperService {
         if (words.length > 1 && words[0].equalsIgnoreCase("METRO")) return words[0] + " " + words[1];
         if (words.length > 1 && words[0].equalsIgnoreCase("Fine")) return words[0] + " " + words[1];
         return words[0];
+    }
+
+    String cleanProductName(String fullName, String trademark) {
+        String result = fullName;
+        if (!trademark.isBlank() && result.regionMatches(true, 0, trademark, 0, trademark.length())) {
+            result = result.substring(trademark.length()).trim();
+        }
+        result = result.replaceAll(
+                "(?iu)\\s*[-–,]?\\s*\\d+\\s*(?:бр\\.?)?\\s*[xх×]\\s*" +
+                "\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g)" +
+                "(?:\\s*/\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g))?\\s*$", "");
+        result = result.replaceAll("(?iu)\\s*[-–,]?\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g)\\s*$", "");
+        return cleanText(result);
     }
 
     private void fallbackScrape(WebDriver driver, List<Map<String, String>> products) {
@@ -412,21 +527,60 @@ public class MetroScraperService {
         return "";
     }
 
-    private String extractWeight(String name) {
-        Matcher matcher = Pattern.compile("(?i)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|г|гр|g)\\b").matcher(name);
-        return matcher.find() ? matcher.group(1) + " " + matcher.group(2) : "";
+    String extractWeight(String name) {
+        Matcher multiPack = Pattern.compile(
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)" +
+                "(?:\\s*/\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g))?").matcher(name);
+        if (multiPack.find()) {
+            String result = multiPack.group(1) + " бр × " + multiPack.group(2) + " " + multiPack.group(3);
+            if (multiPack.group(4) != null) result += " / " + multiPack.group(4) + " " + multiPack.group(5);
+            return result;
+        }
+
+        Matcher matcher = Pattern.compile("(?iu)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+        String lastWeight = "";
+        while (matcher.find()) lastWeight = matcher.group(1) + " " + matcher.group(2);
+        return lastWeight;
     }
 
-    private String calculatePricePerKg(String price, String name) {
+    String calculatePricePerKg(String price, String name) {
         Matcher priceMatcher = Pattern.compile("(\\d+(?:[.,]\\d+)?)\\s*€").matcher(price);
-        Matcher weightMatcher = Pattern.compile("(?i)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|г|гр|g)\\b").matcher(name);
-        if (!priceMatcher.find() || !weightMatcher.find()) return "";
+        if (!priceMatcher.find()) return "";
         double amount = Double.parseDouble(priceMatcher.group(1).replace(',', '.'));
-        double weight = Double.parseDouble(weightMatcher.group(1).replace(',', '.'));
-        String unit = weightMatcher.group(2).toLowerCase(Locale.ROOT);
-        if (unit.equals("г") || unit.equals("гр") || unit.equals("g")) weight /= 1000;
+        double weight = extractTotalWeightKg(name);
         if (weight <= 0) return "";
         return String.format(Locale.US, "%.2f €/кг", amount / weight).replace('.', ',');
+    }
+
+    private double extractTotalWeightKg(String name) {
+        Matcher totalAfterSlash = Pattern.compile(
+                "(?iu)/\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+        double slashWeight = -1;
+        while (totalAfterSlash.find()) {
+            slashWeight = toKilograms(totalAfterSlash.group(1), totalAfterSlash.group(2));
+        }
+        if (slashWeight > 0) return slashWeight;
+
+        Matcher multiPack = Pattern.compile(
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+        if (multiPack.find()) {
+            return Integer.parseInt(multiPack.group(1))
+                    * toKilograms(multiPack.group(2), multiPack.group(3));
+        }
+
+        Matcher singleWeight = Pattern.compile(
+                "(?iu)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+        double lastWeight = -1;
+        while (singleWeight.find()) {
+            lastWeight = toKilograms(singleWeight.group(1), singleWeight.group(2));
+        }
+        return lastWeight;
+    }
+
+    private double toKilograms(String value, String unit) {
+        double weight = Double.parseDouble(value.replace(',', '.'));
+        String normalizedUnit = unit.toLowerCase(Locale.ROOT);
+        return normalizedUnit.equals("кг") || normalizedUnit.equals("kg") ? weight : weight / 1000;
     }
 
     private String cleanText(String text) {

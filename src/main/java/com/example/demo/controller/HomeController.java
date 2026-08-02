@@ -1,17 +1,25 @@
 package com.example.demo.controller;
 
-import com.example.demo.service.KauflandScraperService;
 import com.example.demo.service.MetroScraperService;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
 
 @Controller
 public class HomeController {
@@ -67,6 +75,30 @@ public class HomeController {
                 "products", products,
                 "refreshing", MetroScraperService.isRefreshing(),
                 "error", MetroScraperService.getLastError());
+    }
+
+    @GetMapping("/api/metro-images/{fileName:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> metroImage(@PathVariable String fileName) {
+        if (!fileName.matches("[a-f0-9]{64}\\.(jpg|png|webp|gif)")) {
+            return ResponseEntity.notFound().build();
+        }
+        Path image = MetroScraperService.IMAGE_CACHE_DIR.resolve(fileName).normalize();
+        if (!image.startsWith(MetroScraperService.IMAGE_CACHE_DIR.normalize()) || !Files.isRegularFile(image)) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            String detectedType = Files.probeContentType(image);
+            MediaType mediaType = detectedType == null
+                    ? MediaType.APPLICATION_OCTET_STREAM
+                    : MediaType.parseMediaType(detectedType);
+            return ResponseEntity.ok()
+                    .cacheControl(CacheControl.maxAge(Duration.ofDays(30)).cachePublic())
+                    .contentType(mediaType)
+                    .body(new FileSystemResource(image));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/sales")

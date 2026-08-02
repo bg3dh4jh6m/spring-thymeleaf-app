@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
     <aside th:fragment="sidebar(currentPage)" class="sidebar">
+        <button class="sidebar-toggle" type="button" aria-label="Свий страничната лента" aria-expanded="true">‹</button>
         <div class="sidebar-brand">
             📊 <span>Dashboard</span>
         </div>
@@ -40,6 +41,24 @@
         <div class="sidebar-footer">
             &copy; 2026 Spring Boot Demo
         </div>
+        <script>
+            (() => {
+                const sidebar = document.currentScript.closest('.sidebar');
+                const button = sidebar.querySelector('.sidebar-toggle');
+                const applyState = collapsed => {
+                    sidebar.classList.toggle('collapsed', collapsed);
+                    button.textContent = collapsed ? '›' : '‹';
+                    button.setAttribute('aria-expanded', String(!collapsed));
+                    button.setAttribute('aria-label', collapsed ? 'Разгъни страничната лента' : 'Свий страничната лента');
+                };
+                applyState(localStorage.getItem('sidebar-collapsed') === 'true');
+                button.addEventListener('click', () => {
+                    const collapsed = !sidebar.classList.contains('collapsed');
+                    localStorage.setItem('sidebar-collapsed', String(collapsed));
+                    applyState(collapsed);
+                });
+            })();
+        </script>
     </aside>
 </body>
 </html>

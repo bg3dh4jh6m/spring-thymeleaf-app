@@ -55,7 +55,13 @@
         }
         html, body { overflow-x: hidden; }
         .card { max-width: 100%; overflow: hidden; }
-        .price-table { min-width: 720px; }
+        .price-table { min-width: 1100px; }
+        #metro-table-scroll { scrollbar-gutter: stable; padding-bottom: 0.35rem; cursor: grab; }
+        #metro-table-scroll.dragging { cursor: grabbing; user-select: none; }
+        #metro-table-scroll::-webkit-scrollbar { height: 13px; }
+        #metro-table-scroll::-webkit-scrollbar-track { background: #e8ebf4; border-radius: 8px; }
+        #metro-table-scroll::-webkit-scrollbar-thumb { background: #7886c5; border-radius: 8px; border: 2px solid #e8ebf4; }
+        #metro-table-scroll { scrollbar-color: #7886c5 #e8ebf4; scrollbar-width: auto; }
         .price-table th {
             background: #1a1a2e;
             color: #fff;
@@ -65,6 +71,15 @@
             font-size: 0.8rem;
             white-space: nowrap;
         }
+        .price-table th.sortable-column { cursor: pointer; user-select: none; }
+        .price-table th.sortable-column:hover { background: #303054; }
+        .price-table th.sortable-column::after { content: ' ↕'; opacity: 0.55; }
+        .column-controls { position: relative; display: flex; justify-content: flex-end; margin: 0.75rem 0 0.25rem; }
+        .column-controls > button { border: 1px solid #d7dbea; background: #fff; color: #34375a; border-radius: 7px; padding: 0.45rem 0.75rem; cursor: pointer; }
+        .column-menu { display: none; position: absolute; right: 0; top: calc(100% + 0.35rem); z-index: 20; min-width: 210px; padding: 0.65rem; background: #fff; border: 1px solid #d7dbea; border-radius: 9px; box-shadow: 0 8px 24px rgba(25, 30, 70, 0.16); }
+        .column-menu.open { display: grid; gap: 0.45rem; }
+        .column-menu label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; white-space: nowrap; }
+        [data-column].column-hidden { display: none; }
         .price-table td {
             padding: 0.65rem 0.5rem;
             border-bottom: 1px solid #eee;
@@ -206,31 +221,44 @@
                         <p>Зареждане на цени от Metro.bg...</p>
                     </div>
 
+                    <div class="column-controls">
+                        <button id="metro-column-button" type="button" aria-expanded="false">☷ Колони</button>
+                        <div id="metro-column-menu" class="column-menu" aria-label="Избор на колони">
+                            <label><input type="checkbox" data-toggle-column="image" checked> Снимка</label>
+                            <label><input type="checkbox" data-toggle-column="name" checked> Продукт</label>
+                            <label><input type="checkbox" data-toggle-column="packageSize" checked> Разфасовка</label>
+                            <label><input type="checkbox" data-toggle-column="trademark" checked> Марка</label>
+                            <label><input type="checkbox" data-toggle-column="price" checked> Цена</label>
+                            <label><input type="checkbox" data-toggle-column="pricePerKg" checked> Цена/кг</label>
+                            <label><input type="checkbox" data-toggle-column="addedAt" checked> Добавен на</label>
+                        </div>
+                    </div>
+
                     <div id="metro-table-scroll" style="overflow-x: auto; max-width: 100%;">
                         <table id="metro-price-table" class="price-table">
                             <thead>
                                 <tr>
-                                    <th>Снимка</th>
-                                    <th>Име на продукта</th>
-                                    <th>Разфасовка</th>
-                                    <th>Марка</th>
-                                    <th>Цена</th>
-                                    <th>Цена/кг</th>
-                                    <th>Добавен на</th>
+                                    <th data-column="image">Снимка</th>
+                                    <th data-column="name">Продукт</th>
+                                    <th data-column="packageSize">Разфасовка</th>
+                                    <th data-column="trademark">Марка</th>
+                                    <th data-column="price">Цена</th>
+                                    <th data-column="pricePerKg">Цена/кг</th>
+                                    <th data-column="addedAt">Добавен на</th>
                                 </tr>
                             </thead>
                             <tbody id="metro-products-body">
                                 <tr th:each="p : ${metroProducts}">
-                                    <td>
+                                    <td data-column="image">
                                         <img th:if="${p.imageUrl != null && !p.imageUrl.isEmpty()}" th:src="${p.imageUrl}" class="product-img">
-                                        <span th:unless="${p.imageUrl != null && !p.imageUrl.isEmpty()}" style="font-size:1.3rem">📦</span>
+                                        <img th:unless="${p.imageUrl != null && !p.imageUrl.isEmpty()}" src="/images/product-placeholder.svg" class="product-img" alt="Няма снимка">
                                     </td>
-                                    <td th:text="${p.name}">—</td>
-                                    <td th:text="${p.packageSize} ?: '—'">—</td>
-                                    <td th:text="${p.trademark} ?: '—'">—</td>
-                                    <td class="price" th:text="${p.price}">—</td>
-                                    <td class="price-per-kg" th:text="${p.pricePerKg} ?: '—'">—</td>
-                                    <td th:text="${p.addedAt} ?: '—'">—</td>
+                                    <td data-column="name" th:text="${p.name}">—</td>
+                                    <td data-column="packageSize" th:text="${p.packageSize} ?: '—'">—</td>
+                                    <td data-column="trademark" th:text="${p.trademark} ?: '—'">—</td>
+                                    <td data-column="price" class="price" th:text="${p.price}">—</td>
+                                    <td data-column="pricePerKg" class="price-per-kg" th:text="${p.pricePerKg} ?: '—'">—</td>
+                                    <td data-column="addedAt" th:text="${p.addedAt} ?: '—'">—</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -293,22 +321,162 @@
     </div>
 
     <script>
-        // The initial HTML is served from the local cache. Poll in the background
-        // and redraw it once the asynchronous METRO refresh has completed.
-        const initialMetroCount = /*[[${metroProducts != null ? #lists.size(metroProducts) : 0}]]*/ 0;
-        function refreshMetroWhenReady() {
-            fetch('/api/metro-prices')
+        let metroProducts = [];
+        let metroSortKey = 'name';
+        let metroSortDirection = 1;
+        const defaultMetroColumns = ['image', 'name', 'packageSize', 'trademark', 'price', 'pricePerKg', 'addedAt'];
+        let visibleMetroColumns;
+        try {
+            visibleMetroColumns = new Set(JSON.parse(localStorage.getItem('metro-visible-columns-v2')) || defaultMetroColumns);
+        } catch (_) {
+            visibleMetroColumns = new Set(defaultMetroColumns);
+        }
+
+        function applyMetroColumnVisibility() {
+            document.querySelectorAll('#metro-price-table [data-column]').forEach(element => {
+                element.classList.toggle('column-hidden', !visibleMetroColumns.has(element.dataset.column));
+            });
+            document.querySelectorAll('[data-toggle-column]').forEach(input => {
+                input.checked = visibleMetroColumns.has(input.dataset.toggleColumn);
+            });
+        }
+
+        const metroColumnButton = document.getElementById('metro-column-button');
+        const metroColumnMenu = document.getElementById('metro-column-menu');
+        metroColumnButton.addEventListener('click', event => {
+            event.stopPropagation();
+            const isOpen = metroColumnMenu.classList.toggle('open');
+            metroColumnButton.setAttribute('aria-expanded', isOpen);
+        });
+        metroColumnMenu.addEventListener('click', event => event.stopPropagation());
+        document.addEventListener('click', () => {
+            metroColumnMenu.classList.remove('open');
+            metroColumnButton.setAttribute('aria-expanded', 'false');
+        });
+        document.querySelectorAll('[data-toggle-column]').forEach(input => {
+            input.addEventListener('change', () => {
+                const column = input.dataset.toggleColumn;
+                input.checked ? visibleMetroColumns.add(column) : visibleMetroColumns.delete(column);
+                if (visibleMetroColumns.size === 0) {
+                    visibleMetroColumns.add('name');
+                }
+                localStorage.setItem('metro-visible-columns-v2', JSON.stringify([...visibleMetroColumns]));
+                applyMetroColumnVisibility();
+            });
+        });
+
+        const metroTableScroll = document.getElementById('metro-table-scroll');
+        metroTableScroll.addEventListener('wheel', event => {
+            if (!event.shiftKey) return;
+            event.preventDefault();
+            metroTableScroll.scrollLeft += event.deltaY || event.deltaX;
+        }, {passive: false});
+        let metroDragStartX = 0;
+        let metroDragStartScroll = 0;
+        metroTableScroll.addEventListener('mousedown', event => {
+            if (event.button !== 0 || event.target.closest('a, button, input')) return;
+            metroDragStartX = event.clientX;
+            metroDragStartScroll = metroTableScroll.scrollLeft;
+            metroTableScroll.classList.add('dragging');
+        });
+        window.addEventListener('mousemove', event => {
+            if (!metroTableScroll.classList.contains('dragging')) return;
+            metroTableScroll.scrollLeft = metroDragStartScroll - (event.clientX - metroDragStartX);
+        });
+        window.addEventListener('mouseup', () => metroTableScroll.classList.remove('dragging'));
+
+        const metroColumns = [null, 'name', 'packageSize', 'trademark', 'price', 'pricePerKg', 'addedAt'];
+        document.querySelectorAll('#metro-price-table th').forEach((header, index) => {
+            const key = metroColumns[index];
+            if (!key) return;
+            header.classList.add('sortable-column');
+            header.title = 'Натисни за сортиране';
+            header.addEventListener('click', () => {
+                metroSortDirection = metroSortKey === key ? -metroSortDirection : 1;
+                metroSortKey = key;
+                renderMetroRows();
+            });
+        });
+
+        function metroComparable(product, key) {
+            const value = product[key] || '';
+            if (key === 'price' || key === 'pricePerKg' || key === 'packageSize') {
+                const number = parseFloat(value.replace(',', '.').replace(/[^0-9.]/g, ''));
+                return Number.isNaN(number) ? Number.MAX_VALUE : number;
+            }
+            return value.toLocaleLowerCase('bg');
+        }
+
+        function addMetroCell(row, text, className, column) {
+            const cell = document.createElement('td');
+            cell.textContent = text || '—';
+            if (className) cell.className = className;
+            cell.dataset.column = column;
+            row.appendChild(cell);
+        }
+
+        function renderMetroRows() {
+            const body = document.getElementById('metro-products-body');
+            const sorted = [...metroProducts].sort((left, right) => {
+                const a = metroComparable(left, metroSortKey);
+                const b = metroComparable(right, metroSortKey);
+                return (a < b ? -1 : a > b ? 1 : 0) * metroSortDirection;
+            });
+
+            body.replaceChildren();
+            sorted.forEach(product => {
+                const row = document.createElement('tr');
+                const imageCell = document.createElement('td');
+                imageCell.dataset.column = 'image';
+                if (product.imageUrl) {
+                    const image = document.createElement('img');
+                    image.src = product.imageUrl;
+                    image.alt = product.name || 'Продукт';
+                    image.className = 'product-img';
+                    image.loading = 'lazy';
+                    image.onerror = () => {
+                        image.onerror = null;
+                        image.src = '/images/product-placeholder.svg';
+                    };
+                    imageCell.appendChild(image);
+                } else {
+                    const image = document.createElement('img');
+                    image.src = '/images/product-placeholder.svg';
+                    image.alt = 'Няма снимка';
+                    image.className = 'product-img';
+                    imageCell.appendChild(image);
+                }
+                row.appendChild(imageCell);
+                addMetroCell(row, product.name, '', 'name');
+                addMetroCell(row, product.packageSize, '', 'packageSize');
+                addMetroCell(row, product.trademark, '', 'trademark');
+                addMetroCell(row, product.price, 'price', 'price');
+                addMetroCell(row, product.pricePerKg, 'price-per-kg', 'pricePerKg');
+                addMetroCell(row, product.addedAt ? new Date(product.addedAt).toLocaleString('bg-BG') : '', '', 'addedAt');
+                body.appendChild(row);
+            });
+            applyMetroColumnVisibility();
+        }
+
+        function pollMetroPrices() {
+            fetch('/api/metro-prices', {cache: 'no-store'})
                 .then(response => response.json())
                 .then(data => {
-                    if (data.products.length !== initialMetroCount && !data.refreshing) {
-                        window.location.reload();
-                        return;
+                    if (data.products.length > 0) {
+                        metroProducts = data.products;
+                        renderMetroRows();
+                        document.getElementById('metro-loading')?.remove();
                     }
-                    if (data.refreshing) window.setTimeout(refreshMetroWhenReady, 2500);
+                    const status = document.getElementById('metro-status');
+                    status.textContent = data.products.length > 0
+                        ? `📋 Metro.bg: ${data.products.length} продукта${data.refreshing ? ' — добавям още…' : ' — актуално'}`
+                        : (data.error ? `METRO временно не отговаря: ${data.error}` : 'Свързвам се с METRO…');
+                    window.setTimeout(pollMetroPrices, data.refreshing ? 1500 : 15000);
                 })
-                .catch(() => window.setTimeout(refreshMetroWhenReady, 5000));
+                .catch(() => window.setTimeout(pollMetroPrices, 5000));
         }
-        window.setTimeout(refreshMetroWhenReady, 1000);
+        window.setTimeout(pollMetroPrices, 250);
+        applyMetroColumnVisibility();
 
         function switchTab(tabId) {
             document.querySelectorAll('.store-panel').forEach(p => p.classList.remove('active'));
