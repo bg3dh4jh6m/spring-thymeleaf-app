@@ -53,7 +53,8 @@ public class GourmetSpiceService {
     private static final Set<Integer> RELEVANT_CATEGORY_SET = Set.copyOf(RELEVANT_CATEGORY_IDS);
     private static final long REFRESH_INTERVAL_MS = Duration.ofHours(6).toMillis();
     private static final long EMPTY_RETRY_INTERVAL_MS = Duration.ofSeconds(20).toMillis();
-    private static final Pattern WEIGHT_PATTERN = Pattern.compile("(?iu)(\\d+(?:[.,]\\d+)?)\\s*(kg|кг|g|гр|г)\\b");
+    private static final Pattern MEASURE_PATTERN = Pattern.compile("(?iu)(\\d+(?:[.,]\\d+)?)\\s*(kg|кг|g|гр|г|литра?|л|l|мл|ml)\\b");
+    private static final Pattern DECIMAL_KG_TITLE = Pattern.compile("(?iu)\\b(0[.,]\\d{3})\\b");
     private static final ForkJoinPool VARIATION_POOL = new ForkJoinPool(12);
     private static final DateTimeFormatter DISPLAY_TIME = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
             .withZone(ZoneId.of("Europe/Sofia"));
@@ -86,10 +87,53 @@ public class GourmetSpiceService {
         this.offerHistoryRepository = offerHistoryRepository;
         this.json = json;
         List<SupplierOffer> previouslyCached = offersRepository.findAllBySupplier(SUPPLIER);
-        previouslyCached.stream().filter(offer -> !offer.isActive()).forEach(offer -> offer.setActive(true));
+        previouslyCached.forEach(offer -> {
+            offer.setActive(true);
+            if (offer.getPackageLabel() == null || offer.getPackageLabel().isBlank()) {
+                String inferredPackage = inferPackageFromName(offer.getSupplierProduct().getSupplierName());
+                if (!inferredPackage.isBlank()) {
+                    offer.setPackageLabel(inferredPackage);
+                    offer.setPackageGrams(packageGrams(inferredPackage));
+                    offer.setPackageMilliliters(packageMilliliters(inferredPackage));
+                }
+            }
+            if (offer.getTotalQuantityLabel() == null || offer.getTotalQuantityLabel().isBlank()) {
+                offer.setTotalQuantityLabel(offer.getPackageLabel());
+            }
+            if (offer.getMeasureUnit() == null || offer.getMeasureUnit().isBlank()) {
+                if (offer.getPackageMilliliters() != null && offer.getPackageMilliliters() > 0) {
+                    offer.setMeasureUnit("л");
+                } else if (offer.getPackageGrams() != null && offer.getPackageGrams() > 0) {
+                    offer.setMeasureUnit("кг");
+                }
+            }
+            if (offer.getPricePerUnitEur() == null && offer.getPriceEur() != null) {
+                int units = Math.max(offer.getUnitsPerPackage(), 1);
+                offer.setPricePerUnitEur(offer.getPriceEur()
+                        .divide(BigDecimal.valueOf(units), 2, RoundingMode.HALF_UP));
+            }
+            if (offer.getPricePerKgEur() == null && offer.getPriceEur() != null
+                    && offer.getPackageGrams() != null && offer.getPackageGrams() > 0) {
+                offer.setPricePerKgEur(offer.getPriceEur().multiply(BigDecimal.valueOf(1000))
+                        .divide(BigDecimal.valueOf(offer.getPackageGrams()), 2, RoundingMode.HALF_UP));
+            }
+            if (offer.getPricePerLiterEur() == null && offer.getPriceEur() != null
+                    && offer.getPackageMilliliters() != null && offer.getPackageMilliliters() > 0) {
+                offer.setPricePerLiterEur(offer.getPriceEur().multiply(BigDecimal.valueOf(1000))
+                        .divide(BigDecimal.valueOf(offer.getPackageMilliliters()), 2, RoundingMode.HALF_UP));
+            }
+        });
         if (!previouslyCached.isEmpty()) offersRepository.saveAll(previouslyCached);
         this.cachedProducts = loadDatabaseCache();
-        if (!this.cachedProducts.isEmpty()) this.lastRefreshStartedAt = System.currentTimeMillis();
+        // Older cache rows predate the normalized measure and per-unit columns.
+        // Keep serving them immediately, but allow the first request to enrich
+        // them in the background instead of treating them as fresh for six hours.
+        boolean cacheUsesCurrentMeasureModel = this.cachedProducts.stream()
+                .allMatch(product -> !product.getOrDefault("measureUnit", "").isBlank()
+                        && !product.getOrDefault("pricePerUnit", "").isBlank());
+        if (!this.cachedProducts.isEmpty() && cacheUsesCurrentMeasureModel) {
+            this.lastRefreshStartedAt = System.currentTimeMillis();
+        }
     }
 
     /** Returns exact cached package offers immediately and refreshes them in the background. */
@@ -147,7 +191,7 @@ public class GourmetSpiceService {
         })).join();
         return progressive.stream()
                 .sorted(Comparator.comparing((Map<String, String> row) -> row.get("name"), String.CASE_INSENSITIVE_ORDER)
-                        .thenComparingInt(row -> Integer.parseInt(row.getOrDefault("packageGrams", "0"))))
+                        .thenComparingInt(row -> Integer.parseInt(row.getOrDefault("packageBaseQuantity", "0"))))
                 .toList();
     }
 
@@ -178,8 +222,13 @@ public class GourmetSpiceService {
         JsonNode prices = pricedNode.path("prices");
         BigDecimal price = minorAmount(prices.path("price").asText("0"), prices.path("currency_minor_unit").asInt(2));
         int packageGrams = packageGrams(packageLabel);
+        int packageMilliliters = packageMilliliters(packageLabel);
+        String measureUnit = packageMilliliters > 0 ? "л" : packageGrams > 0 ? "кг" : "";
         BigDecimal pricePerKg = packageGrams > 0
                 ? price.multiply(BigDecimal.valueOf(1000)).divide(BigDecimal.valueOf(packageGrams), 2, RoundingMode.HALF_UP)
+                : null;
+        BigDecimal pricePerLiter = packageMilliliters > 0
+                ? price.multiply(BigDecimal.valueOf(1000)).divide(BigDecimal.valueOf(packageMilliliters), 2, RoundingMode.HALF_UP)
                 : null;
 
         Map<String, String> result = new LinkedHashMap<>();
@@ -192,11 +241,20 @@ public class GourmetSpiceService {
         result.put("name", cleanHtml(product.path("name").asText("")));
         result.put("category", relevantCategories(product.path("categories")));
         result.put("packageWeight", packageLabel);
+        result.put("totalQuantity", packageLabel);
         result.put("packageGrams", Integer.toString(packageGrams));
+        result.put("packageMilliliters", Integer.toString(packageMilliliters));
+        result.put("packageBaseQuantity", Integer.toString(Math.max(packageGrams, packageMilliliters)));
+        result.put("measureUnit", measureUnit);
         result.put("unitsPerPackage", "1 бр.");
         result.put("price", "€" + price);
         result.put("priceMin", price.toPlainString());
+        result.put("pricePerUnit", "€" + price + "/бр.");
         result.put("pricePerKg", pricePerKg == null ? "" : "€" + pricePerKg + "/кг");
+        result.put("pricePerLiter", pricePerLiter == null ? "" : "€" + pricePerLiter + "/л");
+        result.put("pricePerMeasure", pricePerLiter == null
+                ? result.get("pricePerKg")
+                : result.get("pricePerLiter"));
         result.put("productUrl", product.path("permalink").asText(""));
         result.put("imageUrl", firstImage(product.path("images")));
         result.put("addedAt", DISPLAY_TIME.format(capturedAt));
@@ -237,10 +295,11 @@ public class GourmetSpiceService {
 
     private String variationPackage(JsonNode reference) {
         for (JsonNode attribute : reference.path("attributes")) {
-            if (cleanHtml(attribute.path("name").asText("")).equalsIgnoreCase("Тегло")) {
+            String attributeName = cleanHtml(attribute.path("name").asText(""));
+            if (attributeName.equalsIgnoreCase("Тегло") || attributeName.equalsIgnoreCase("Обем")) {
                 String value = attribute.path("value").asText("");
-                value = value.replaceFirst("^(\\d+)-(\\d+)-(kg|g)$", "$1.$2 $3")
-                        .replaceFirst("^(\\d+)-(kg|g)$", "$1 $2");
+                value = value.replaceFirst("^(\\d+)-(\\d+)-(kg|g|l|ml)$", "$1.$2 $3")
+                        .replaceFirst("^(\\d+)-(kg|g|l|ml)$", "$1 $2");
                 return value;
             }
         }
@@ -248,26 +307,54 @@ public class GourmetSpiceService {
     }
 
     private String inferSimplePackage(JsonNode product) {
-        Matcher nameWeight = WEIGHT_PATTERN.matcher(cleanHtml(product.path("name").asText("")));
-        if (nameWeight.find()) return nameWeight.group(1).replace(',', '.') + " " + normalizeUnit(nameWeight.group(2));
+        String fromName = inferPackageFromName(cleanHtml(product.path("name").asText("")));
+        if (!fromName.isBlank()) return fromName;
         for (JsonNode attribute : product.path("attributes")) {
-            if (!cleanHtml(attribute.path("name").asText("")).equalsIgnoreCase("Тегло")) continue;
+            String attributeName = cleanHtml(attribute.path("name").asText(""));
+            if (!attributeName.equalsIgnoreCase("Тегло") && !attributeName.equalsIgnoreCase("Обем")) continue;
             JsonNode terms = attribute.path("terms");
             if (terms.size() == 1) return cleanHtml(terms.get(0).path("name").asText(""));
         }
         return "";
     }
 
+    private String inferPackageFromName(String name) {
+        Matcher explicitMeasure = MEASURE_PATTERN.matcher(Objects.toString(name, ""));
+        if (explicitMeasure.find()) {
+            return explicitMeasure.group(1).replace(',', '.') + " " + normalizeDisplayUnit(explicitMeasure.group(2));
+        }
+        // Gourmet Spice uses titles such as "0.250" and "0.100" for
+        // kilogram quantities on a few simple products, without a unit suffix.
+        Matcher decimalKilograms = DECIMAL_KG_TITLE.matcher(Objects.toString(name, ""));
+        return decimalKilograms.find() ? decimalKilograms.group(1).replace(',', '.') + " kg" : "";
+    }
+
     private int packageGrams(String label) {
-        Matcher matcher = WEIGHT_PATTERN.matcher(Objects.toString(label, ""));
+        Matcher matcher = MEASURE_PATTERN.matcher(Objects.toString(label, ""));
         if (!matcher.find()) return 0;
+        String unit = normalizeDisplayUnit(matcher.group(2));
+        if (unit.equals("l") || unit.equals("ml")) return 0;
         BigDecimal value = new BigDecimal(matcher.group(1).replace(',', '.'));
-        if (normalizeUnit(matcher.group(2)).equals("kg")) value = value.multiply(BigDecimal.valueOf(1000));
+        if (unit.equals("kg")) value = value.multiply(BigDecimal.valueOf(1000));
         return value.setScale(0, RoundingMode.HALF_UP).intValue();
     }
 
-    private String normalizeUnit(String unit) {
-        return unit.toLowerCase(Locale.ROOT).startsWith("k") || unit.toLowerCase(Locale.ROOT).startsWith("к") ? "kg" : "g";
+    private int packageMilliliters(String label) {
+        Matcher matcher = MEASURE_PATTERN.matcher(Objects.toString(label, ""));
+        if (!matcher.find()) return 0;
+        String unit = normalizeDisplayUnit(matcher.group(2));
+        if (!unit.equals("l") && !unit.equals("ml")) return 0;
+        BigDecimal value = new BigDecimal(matcher.group(1).replace(',', '.'));
+        if (unit.equals("l")) value = value.multiply(BigDecimal.valueOf(1000));
+        return value.setScale(0, RoundingMode.HALF_UP).intValue();
+    }
+
+    private String normalizeDisplayUnit(String unit) {
+        String normalized = unit.toLowerCase(Locale.ROOT);
+        if (normalized.equals("kg") || normalized.equals("кг")) return "kg";
+        if (normalized.equals("ml") || normalized.equals("мл")) return "ml";
+        if (normalized.equals("l") || normalized.equals("л") || normalized.startsWith("лит")) return "l";
+        return "g";
     }
 
     private String relevantCategories(JsonNode categories) {
@@ -376,13 +463,19 @@ public class GourmetSpiceService {
                 offerHistory.add(new SupplierOfferPriceHistory(offerCode, price, capturedAt));
             }
             int grams = Integer.parseInt(source.get("packageGrams"));
+            int milliliters = Integer.parseInt(source.getOrDefault("packageMilliliters", "0"));
             offer.setSupplierProduct(productsByCode.get(source.get("supplierProductCode")));
             offer.setVariantExternalId(source.get("variantExternalId"));
             offer.setPackageLabel(source.get("packageWeight"));
+            offer.setTotalQuantityLabel(source.get("totalQuantity"));
             offer.setPackageGrams(grams == 0 ? null : grams);
+            offer.setPackageMilliliters(milliliters == 0 ? null : milliliters);
+            offer.setMeasureUnit(source.get("measureUnit"));
             offer.setUnitsPerPackage(1);
             offer.setPriceEur(price);
+            offer.setPricePerUnitEur(price);
             offer.setPricePerKgEur(grams == 0 ? null : price.multiply(BigDecimal.valueOf(1000)).divide(BigDecimal.valueOf(grams), 2, RoundingMode.HALF_UP));
+            offer.setPricePerLiterEur(milliliters == 0 ? null : price.multiply(BigDecimal.valueOf(1000)).divide(BigDecimal.valueOf(milliliters), 2, RoundingMode.HALF_UP));
             offer.setActive(true);
             offer.setCapturedAt(capturedAt);
             offers.add(offer);
@@ -410,11 +503,20 @@ public class GourmetSpiceService {
         result.put("name", product.getSupplierName());
         result.put("category", Objects.toString(product.getCategory(), ""));
         result.put("packageWeight", Objects.toString(offer.getPackageLabel(), ""));
+        result.put("totalQuantity", Objects.toString(offer.getTotalQuantityLabel(), offer.getPackageLabel()));
         result.put("packageGrams", Objects.toString(offer.getPackageGrams(), "0"));
+        result.put("packageMilliliters", Objects.toString(offer.getPackageMilliliters(), "0"));
+        result.put("packageBaseQuantity", Objects.toString(offer.getPackageGrams() != null ? offer.getPackageGrams() : offer.getPackageMilliliters(), "0"));
+        result.put("measureUnit", Objects.toString(offer.getMeasureUnit(), ""));
         result.put("unitsPerPackage", offer.getUnitsPerPackage() + " бр.");
         result.put("priceMin", offer.getPriceEur().toPlainString());
         result.put("price", "€" + offer.getPriceEur());
+        result.put("pricePerUnit", offer.getPricePerUnitEur() == null ? "" : "€" + offer.getPricePerUnitEur() + "/бр.");
         result.put("pricePerKg", offer.getPricePerKgEur() == null ? "" : "€" + offer.getPricePerKgEur() + "/кг");
+        result.put("pricePerLiter", offer.getPricePerLiterEur() == null ? "" : "€" + offer.getPricePerLiterEur() + "/л");
+        result.put("pricePerMeasure", offer.getPricePerLiterEur() == null
+                ? result.get("pricePerKg")
+                : result.get("pricePerLiter"));
         result.put("productUrl", Objects.toString(product.getProductUrl(), ""));
         result.put("imageUrl", Objects.toString(product.getImageUrl(), ""));
         result.put("addedAt", DISPLAY_TIME.format(offer.getCapturedAt()));

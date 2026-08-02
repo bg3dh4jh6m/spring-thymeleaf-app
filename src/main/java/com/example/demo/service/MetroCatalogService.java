@@ -93,12 +93,16 @@ public class MetroCatalogService {
             }
 
             BigDecimal price = decimal(source.get("price"));
-            int grams = packageGrams(source.get("packageWeight"));
+            String measureUnit = source.getOrDefault("measureUnit", "");
+            String totalQuantity = source.getOrDefault("totalQuantity", source.getOrDefault("packageWeight", ""));
+            int baseQuantity = packageBaseQuantity(totalQuantity, measureUnit);
+            int grams = measureUnit.equals("кг") ? baseQuantity : 0;
+            int milliliters = measureUnit.equals("л") ? baseQuantity : 0;
             supplierProduct.setSupplier(SUPPLIER);
             supplierProduct.setExternalId(code.substring(3));
             supplierProduct.setSupplierName(source.getOrDefault("name", ""));
             supplierProduct.setCategory("Подправки");
-            supplierProduct.setPackageOptions(source.getOrDefault("packageWeight", ""));
+            supplierProduct.setPackageOptions(totalQuantity);
             supplierProduct.setPriceMinEur(price);
             supplierProduct.setPriceMaxEur(price);
             supplierProduct.setProductUrl(source.getOrDefault("productUrl", ""));
@@ -114,10 +118,15 @@ public class MetroCatalogService {
             offer.setSupplierProduct(supplierProduct);
             offer.setVariantExternalId(code.substring(3));
             offer.setPackageLabel(source.getOrDefault("packageWeight", ""));
+            offer.setTotalQuantityLabel(totalQuantity);
             offer.setPackageGrams(grams == 0 ? null : grams);
+            offer.setPackageMilliliters(milliliters == 0 ? null : milliliters);
+            offer.setMeasureUnit(measureUnit);
             offer.setUnitsPerPackage(integer(source.get("unitsPerPackage"), 1));
             offer.setPriceEur(price);
+            offer.setPricePerUnitEur(price.divide(BigDecimal.valueOf(offer.getUnitsPerPackage()), 2, RoundingMode.HALF_UP));
             offer.setPricePerKgEur(grams == 0 ? null : price.multiply(BigDecimal.valueOf(1000)).divide(BigDecimal.valueOf(grams), 2, RoundingMode.HALF_UP));
+            offer.setPricePerLiterEur(milliliters == 0 ? null : price.multiply(BigDecimal.valueOf(1000)).divide(BigDecimal.valueOf(milliliters), 2, RoundingMode.HALF_UP));
             offer.setActive(true);
             offer.setCapturedAt(capturedAt);
             offers.add(offer);
@@ -126,6 +135,14 @@ public class MetroCatalogService {
             copy.put("catalogCode", supplierProduct.getCatalogProduct().getInternalCode());
             copy.put("supplierCode", code);
             copy.put("packageGrams", Integer.toString(grams));
+            copy.put("packageMilliliters", Integer.toString(milliliters));
+            copy.put("totalQuantity", totalQuantity);
+            copy.put("measureUnit", measureUnit);
+            copy.put("pricePerLiter", offer.getPricePerLiterEur() == null ? "" : offer.getPricePerLiterEur().toPlainString().replace('.', ',') + " €/л");
+            copy.put("pricePerUnit", offer.getPricePerUnitEur().toPlainString().replace('.', ',') + " €/бр.");
+            copy.put("pricePerMeasure", measureUnit.equals("л")
+                    ? copy.get("pricePerLiter")
+                    : copy.getOrDefault("pricePerKg", ""));
             decorated.add(copy);
         }
         supplierProductsRepository.saveAll(supplierProducts);
@@ -165,10 +182,15 @@ public class MetroCatalogService {
         return matcher.find() ? new BigDecimal(matcher.group(1).replace(',', '.')).intValue() : fallback;
     }
 
-    private int packageGrams(String value) {
+    private int packageBaseQuantity(String value, String measureUnit) {
         BigDecimal number = decimal(value);
         String normalized = Objects.toString(value, "").toLowerCase(new Locale("bg"));
-        if (normalized.contains("кг") || normalized.contains("kg")) number = number.multiply(BigDecimal.valueOf(1000));
+        if (measureUnit.equals("кг") && (normalized.contains("кг") || normalized.contains("kg"))) {
+            number = number.multiply(BigDecimal.valueOf(1000));
+        }
+        if (measureUnit.equals("л") && !normalized.contains("мл") && !normalized.contains("ml")) {
+            number = number.multiply(BigDecimal.valueOf(1000));
+        }
         return number.setScale(0, RoundingMode.HALF_UP).intValue();
     }
 }

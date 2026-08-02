@@ -34,6 +34,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.security.MessageDigest;
+import java.math.BigDecimal;
 import java.util.HexFormat;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -420,8 +421,11 @@ public class MetroScraperService {
             String unitsPerPackage = extractPackageCount(fullName, bundleText);
             product.put("packageWeight", packageWeight);
             product.put("unitsPerPackage", unitsPerPackage);
+            product.put("totalQuantity", extractTotalPackageSize(fullName));
             product.put("packageSize", packageWeight + (unitsPerPackage.isBlank() ? "" : " • " + unitsPerPackage));
+            product.put("measureUnit", detectMeasureUnit(fullName));
             product.put("pricePerKg", calculatePricePerKg(price, fullName));
+            product.put("pricePerLiter", calculatePricePerLiter(price, fullName));
             product.put("imageUrl", image == null ? "" : image.absUrl("src"));
             product.put("productUrl", link == null ? "" : link.absUrl("href"));
             product.put("trademark", trademark);
@@ -456,9 +460,9 @@ public class MetroScraperService {
         }
         result = result.replaceAll(
                 "(?iu)\\s*[-–,]?\\s*\\d+\\s*(?:бр\\.?)?\\s*[xх×]\\s*" +
-                "\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g)" +
-                "(?:\\s*/\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g))?\\s*$", "");
-        result = result.replaceAll("(?iu)\\s*[-–,]?\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g)\\s*$", "");
+                "\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g|литра?|л|l|мл|ml)" +
+                "(?:\\s*/\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g|литра?|л|l|мл|ml))?\\s*$", "");
+        result = result.replaceAll("(?iu)\\s*[-–,]?\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g|литра?|л|l|мл|ml)\\s*$", "");
         return cleanText(result);
     }
 
@@ -548,11 +552,11 @@ public class MetroScraperService {
 
     String extractPackageWeight(String name) {
         Matcher multiPack = Pattern.compile(
-                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g|литра?|л|l|мл|ml)").matcher(name);
         if (multiPack.find()) return multiPack.group(2) + " " + multiPack.group(3);
 
         Matcher weight = Pattern.compile(
-                "(?iu)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+                "(?iu)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g|литра?|л|l|мл|ml)").matcher(name);
         String lastWeight = "";
         while (weight.find()) lastWeight = weight.group(1) + " " + weight.group(2);
         return lastWeight;
@@ -560,24 +564,42 @@ public class MetroScraperService {
 
     String extractPackageCount(String name, String bundleText) {
         Matcher multiPack = Pattern.compile(
-                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g)").matcher(name);
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*\\d+(?:[.,]\\d+)?\\s*(?:кг|kg|гр|г|g|литра?|л|l|мл|ml)").matcher(name);
         if (multiPack.find()) return multiPack.group(1) + " бр.";
 
         Matcher bundleCount = Pattern.compile("(?iu)^\\s*(\\d+)").matcher(bundleText);
         return bundleCount.find() ? bundleCount.group(1) + " бр." : "1 бр.";
     }
 
+    String extractTotalPackageSize(String name) {
+        Matcher totalAfterSlash = Pattern.compile(
+                "(?iu)/\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g|литра?|л|l|мл|ml)").matcher(name);
+        String explicitTotal = "";
+        while (totalAfterSlash.find()) explicitTotal = totalAfterSlash.group(1) + " " + totalAfterSlash.group(2);
+        if (!explicitTotal.isBlank()) return explicitTotal;
+
+        Matcher multiPack = Pattern.compile(
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g|литра?|л|l|мл|ml)").matcher(name);
+        if (multiPack.find()) {
+            BigDecimal total = new BigDecimal(multiPack.group(2).replace(',', '.'))
+                    .multiply(BigDecimal.valueOf(Long.parseLong(multiPack.group(1))))
+                    .stripTrailingZeros();
+            return total.toPlainString().replace('.', ',') + " " + multiPack.group(3);
+        }
+        return extractPackageWeight(name);
+    }
+
     String extractWeight(String name) {
         Matcher multiPack = Pattern.compile(
-                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)" +
-                "(?:\\s*/\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g))?").matcher(name);
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g|литра?|л|l|мл|ml)" +
+                "(?:\\s*/\\s*(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g|литра?|л|l|мл|ml))?").matcher(name);
         if (multiPack.find()) {
             String result = multiPack.group(1) + " бр × " + multiPack.group(2) + " " + multiPack.group(3);
             if (multiPack.group(4) != null) result += " / " + multiPack.group(4) + " " + multiPack.group(5);
             return result;
         }
 
-        Matcher matcher = Pattern.compile("(?iu)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g)").matcher(name);
+        Matcher matcher = Pattern.compile("(?iu)(\\d+(?:[.,]\\d+)?)\\s*(кг|kg|гр|г|g|литра?|л|l|мл|ml)").matcher(name);
         String lastWeight = "";
         while (matcher.find()) lastWeight = matcher.group(1) + " " + matcher.group(2);
         return lastWeight;
@@ -590,6 +612,21 @@ public class MetroScraperService {
         double weight = extractTotalWeightKg(name);
         if (weight <= 0) return "";
         return String.format(Locale.US, "%.2f €/кг", amount / weight).replace('.', ',');
+    }
+
+    String calculatePricePerLiter(String price, String name) {
+        Matcher priceMatcher = Pattern.compile("(\\d+(?:[.,]\\d+)?)\\s*€").matcher(price);
+        if (!priceMatcher.find()) return "";
+        double amount = Double.parseDouble(priceMatcher.group(1).replace(',', '.'));
+        double volume = extractTotalVolumeLiters(name);
+        if (volume <= 0) return "";
+        return String.format(Locale.US, "%.2f €/л", amount / volume).replace('.', ',');
+    }
+
+    String detectMeasureUnit(String name) {
+        if (extractTotalVolumeLiters(name) > 0) return "л";
+        if (extractTotalWeightKg(name) > 0) return "кг";
+        return "";
     }
 
     private double extractTotalWeightKg(String name) {
@@ -621,6 +658,32 @@ public class MetroScraperService {
         double weight = Double.parseDouble(value.replace(',', '.'));
         String normalizedUnit = unit.toLowerCase(Locale.ROOT);
         return normalizedUnit.equals("кг") || normalizedUnit.equals("kg") ? weight : weight / 1000;
+    }
+
+    private double extractTotalVolumeLiters(String name) {
+        Matcher totalAfterSlash = Pattern.compile(
+                "(?iu)/\\s*(\\d+(?:[.,]\\d+)?)\\s*(литра?|л|l|мл|ml)").matcher(name);
+        double slashVolume = -1;
+        while (totalAfterSlash.find()) slashVolume = toLiters(totalAfterSlash.group(1), totalAfterSlash.group(2));
+        if (slashVolume > 0) return slashVolume;
+
+        Matcher multiPack = Pattern.compile(
+                "(?iu)(\\d+)\\s*(?:бр\\.?)?\\s*[xх×]\\s*(\\d+(?:[.,]\\d+)?)\\s*(литра?|л|l|мл|ml)").matcher(name);
+        if (multiPack.find()) {
+            return Integer.parseInt(multiPack.group(1)) * toLiters(multiPack.group(2), multiPack.group(3));
+        }
+
+        Matcher singleVolume = Pattern.compile(
+                "(?iu)(\\d+(?:[.,]\\d+)?)\\s*(литра?|л|l|мл|ml)").matcher(name);
+        double lastVolume = -1;
+        while (singleVolume.find()) lastVolume = toLiters(singleVolume.group(1), singleVolume.group(2));
+        return lastVolume;
+    }
+
+    private double toLiters(String value, String unit) {
+        double volume = Double.parseDouble(value.replace(',', '.'));
+        String normalizedUnit = unit.toLowerCase(Locale.ROOT);
+        return normalizedUnit.equals("мл") || normalizedUnit.equals("ml") ? volume / 1000 : volume;
     }
 
     private String cleanText(String text) {

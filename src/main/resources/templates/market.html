@@ -99,6 +99,7 @@
             font-weight: 500;
             white-space: nowrap;
         }
+        .price-table .unit-price { color: #c0392b; font-weight: 500; white-space: nowrap; }
         .price-table .old-price {
             text-decoration: line-through;
             color: #999;
@@ -232,6 +233,8 @@
                     <div class="column-controls">
                         <button id="metro-package-button" type="button" aria-expanded="false">⚗ Разфасовки</button>
                         <div id="metro-package-menu" class="column-menu package-menu" aria-label="Филтър по разфасовка">
+                            <label><input type="checkbox" data-metro-measure="кг"> Само тегло (кг)</label>
+                            <label><input type="checkbox" data-metro-measure="л"> Само обем (л)</label>
                             <div id="metro-package-options"></div>
                             <button id="metro-package-clear" class="filter-clear" type="button">Покажи всички</button>
                         </div>
@@ -241,11 +244,14 @@
                             <label><input type="checkbox" data-toggle-column="supplierCode" checked> Доставчик №</label>
                             <label><input type="checkbox" data-toggle-column="image" checked> Снимка</label>
                             <label><input type="checkbox" data-toggle-column="name" checked> Продукт</label>
-                            <label><input type="checkbox" data-toggle-column="packageWeight" checked> Грамаж</label>
+                            <label><input type="checkbox" data-toggle-column="packageWeight" checked> Количество/бр.</label>
                             <label><input type="checkbox" data-toggle-column="unitsPerPackage" checked> Бройки в пакет</label>
+                            <label><input type="checkbox" data-toggle-column="totalQuantity" checked> Общо количество</label>
+                            <label><input type="checkbox" data-toggle-column="measureUnit" checked> Мярка</label>
                             <label><input type="checkbox" data-toggle-column="trademark" checked> Марка</label>
                             <label><input type="checkbox" data-toggle-column="price" checked> Цена</label>
-                            <label><input type="checkbox" data-toggle-column="pricePerKg" checked> Цена/кг</label>
+                            <label><input type="checkbox" data-toggle-column="pricePerUnit" checked> Цена/бр.</label>
+                            <label><input type="checkbox" data-toggle-column="pricePerMeasure" checked> Цена/мярка</label>
                             <label><input type="checkbox" data-toggle-column="addedAt" checked> Добавен на</label>
                         </div>
                     </div>
@@ -258,11 +264,14 @@
                                     <th data-column="supplierCode">Доставчик №</th>
                                     <th data-column="image">Снимка</th>
                                     <th data-column="name">Продукт</th>
-                                    <th data-column="packageWeight">Грамаж</th>
+                                    <th data-column="packageWeight">Количество/бр.</th>
                                     <th data-column="unitsPerPackage">Бройки в пакет</th>
+                                    <th data-column="totalQuantity">Общо количество</th>
+                                    <th data-column="measureUnit">Мярка</th>
                                     <th data-column="trademark">Марка</th>
                                     <th data-column="price">Цена</th>
-                                    <th data-column="pricePerKg">Цена/кг</th>
+                                    <th data-column="pricePerUnit">Цена/бр.</th>
+                                    <th data-column="pricePerMeasure">Цена/мярка</th>
                                     <th data-column="addedAt">Добавен на</th>
                                 </tr>
                             </thead>
@@ -277,9 +286,12 @@
                                     <td data-column="name" th:text="${p.name}">—</td>
                                     <td data-column="packageWeight" th:text="${p.packageWeight} ?: '—'">—</td>
                                     <td data-column="unitsPerPackage" th:text="${p.unitsPerPackage} ?: '—'">—</td>
+                                    <td data-column="totalQuantity" th:text="${p.totalQuantity} ?: '—'">—</td>
+                                    <td data-column="measureUnit" th:text="${p.measureUnit} ?: '—'">—</td>
                                     <td data-column="trademark" th:text="${p.trademark} ?: '—'">—</td>
                                     <td data-column="price" class="price" th:text="${p.price}">—</td>
-                                    <td data-column="pricePerKg" class="price-per-kg" th:text="${p.pricePerKg} ?: '—'">—</td>
+                                    <td data-column="pricePerUnit" class="unit-price" th:text="${p.pricePerUnit} ?: '—'">—</td>
+                                    <td data-column="pricePerMeasure" class="unit-price" th:text="${p.pricePerMeasure} ?: '—'">—</td>
                                     <td data-column="addedAt" th:text="${p.addedAt} ?: '—'">—</td>
                                 </tr>
                             </tbody>
@@ -303,6 +315,8 @@
                     <div class="column-controls">
                         <button id="gourmet-package-button" type="button" aria-expanded="false">⚗ Разфасовки</button>
                         <div id="gourmet-package-menu" class="column-menu package-menu" aria-label="Филтър по разфасовка">
+                            <label><input type="checkbox" data-gourmet-measure="кг"> Само тегло (кг)</label>
+                            <label><input type="checkbox" data-gourmet-measure="л"> Само обем (л)</label>
                             <div id="gourmet-package-options"></div>
                             <button id="gourmet-package-clear" class="filter-clear" type="button">Покажи всички</button>
                         </div>
@@ -313,10 +327,13 @@
                             <label><input type="checkbox" data-gourmet-toggle="image" checked> Снимка</label>
                             <label><input type="checkbox" data-gourmet-toggle="name" checked> Продукт</label>
                             <label><input type="checkbox" data-gourmet-toggle="category" checked> Категория</label>
-                            <label><input type="checkbox" data-gourmet-toggle="packageWeight" checked> Грамаж</label>
+                            <label><input type="checkbox" data-gourmet-toggle="packageWeight" checked> Количество/бр.</label>
                             <label><input type="checkbox" data-gourmet-toggle="unitsPerPackage" checked> Бройки в пакет</label>
+                            <label><input type="checkbox" data-gourmet-toggle="totalQuantity" checked> Общо количество</label>
+                            <label><input type="checkbox" data-gourmet-toggle="measureUnit" checked> Мярка</label>
                             <label><input type="checkbox" data-gourmet-toggle="price" checked> Цена</label>
-                            <label><input type="checkbox" data-gourmet-toggle="pricePerKg" checked> Цена/кг</label>
+                            <label><input type="checkbox" data-gourmet-toggle="pricePerUnit" checked> Цена/бр.</label>
+                            <label><input type="checkbox" data-gourmet-toggle="pricePerMeasure" checked> Цена/мярка</label>
                             <label><input type="checkbox" data-gourmet-toggle="addedAt" checked> Проверено на</label>
                         </div>
                     </div>
@@ -329,10 +346,13 @@
                                     <th data-column="image">Снимка</th>
                                     <th data-column="name" data-key="name">Продукт</th>
                                     <th data-column="category" data-key="category">Категория</th>
-                                    <th data-column="packageWeight" data-key="packageGrams">Грамаж</th>
+                                    <th data-column="packageWeight" data-key="packageBaseQuantity">Количество/бр.</th>
                                     <th data-column="unitsPerPackage" data-key="unitsPerPackage">Бройки в пакет</th>
+                                    <th data-column="totalQuantity" data-key="packageBaseQuantity">Общо количество</th>
+                                    <th data-column="measureUnit" data-key="measureUnit">Мярка</th>
                                     <th data-column="price" data-key="priceMin">Цена</th>
-                                    <th data-column="pricePerKg" data-key="pricePerKg">Цена/кг</th>
+                                    <th data-column="pricePerUnit" data-key="pricePerUnit">Цена/бр.</th>
+                                    <th data-column="pricePerMeasure" data-key="pricePerMeasure">Цена/мярка</th>
                                     <th data-column="addedAt" data-key="addedAt">Проверено на</th>
                                 </tr>
                             </thead>
@@ -401,11 +421,13 @@
         let metroProducts = [];
         let metroSortKey = 'name';
         let metroSortDirection = 1;
-        const defaultMetroColumns = ['catalogCode', 'supplierCode', 'image', 'name', 'packageWeight', 'unitsPerPackage', 'trademark', 'price', 'pricePerKg', 'addedAt'];
+        const defaultMetroColumns = ['catalogCode', 'supplierCode', 'image', 'name', 'packageWeight', 'unitsPerPackage', 'totalQuantity', 'measureUnit', 'trademark', 'price', 'pricePerUnit', 'pricePerMeasure', 'addedAt'];
         let selectedMetroPackages = new Set(JSON.parse(localStorage.getItem('metro-package-filter-v1') || '[]'));
+        let selectedMetroMeasures = new Set(JSON.parse(localStorage.getItem('metro-measure-filter-v1') || '[]'));
+        if ([...selectedMetroPackages].some(key => !key.includes(':'))) selectedMetroPackages.clear();
         let visibleMetroColumns;
         try {
-            visibleMetroColumns = new Set(JSON.parse(localStorage.getItem('metro-visible-columns-v3')) || defaultMetroColumns);
+            visibleMetroColumns = new Set(JSON.parse(localStorage.getItem('metro-visible-columns-v5')) || defaultMetroColumns);
         } catch (_) {
             visibleMetroColumns = new Set(defaultMetroColumns);
         }
@@ -442,27 +464,38 @@
                 if (visibleMetroColumns.size === 0) {
                     visibleMetroColumns.add('name');
                 }
-                localStorage.setItem('metro-visible-columns-v3', JSON.stringify([...visibleMetroColumns]));
+                localStorage.setItem('metro-visible-columns-v5', JSON.stringify([...visibleMetroColumns]));
                 applyMetroColumnVisibility();
             });
         });
 
         function packageKey(product) {
-            if (Number(product.packageGrams) > 0) return String(Number(product.packageGrams));
-            const value = product.packageWeight || product.packageSize || '';
-            const match = value.toLocaleLowerCase('bg').match(/(\d+(?:[.,]\d+)?)\s*(\u043a\u0433|kg|\u0433\u0440|\u0433|g)/);
+            if (Number(product.packageMilliliters) > 0) return `l:${Number(product.packageMilliliters)}`;
+            if (Number(product.packageGrams) > 0) return `kg:${Number(product.packageGrams)}`;
+            const value = product.totalQuantity || product.packageWeight || product.packageSize || '';
+            const match = value.toLocaleLowerCase('bg').match(/(\d+(?:[.,]\d+)?)\s*(\u043a\u0433|kg|\u0433\u0440|\u0433|g|\u043c\u043b|ml|\u043b|l)/);
             if (!match) return 'unknown';
             const amount = Number(match[1].replace(',', '.'));
-            return String(Math.round((match[2] === '\u043a\u0433' || match[2] === 'kg') ? amount * 1000 : amount));
+            const isVolume = ['\u043c\u043b', 'ml', '\u043b', 'l'].includes(match[2]);
+            const isLargeUnit = ['\u043a\u0433', 'kg', '\u043b', 'l'].includes(match[2]);
+            return `${isVolume ? 'l' : 'kg'}:${Math.round(isLargeUnit ? amount * 1000 : amount)}`;
         }
 
         function packageLabel(key) {
-            const grams = Number(key);
-            if (!Number.isFinite(grams)) return 'Без разфасовка';
-            return grams >= 1000 ? `${(grams / 1000).toLocaleString('bg-BG')} кг` : `${grams} г`;
+            if (key === 'unknown') return 'Без разфасовка';
+            const [unit, rawAmount] = key.split(':');
+            const amount = Number(rawAmount);
+            if (!Number.isFinite(amount)) return 'Без разфасовка';
+            if (unit === 'l') return amount >= 1000 ? `${(amount / 1000).toLocaleString('bg-BG')} л` : `${amount} мл`;
+            return amount >= 1000 ? `${(amount / 1000).toLocaleString('bg-BG')} кг` : `${amount} г`;
         }
 
-        function populatePackageOptions(containerId, products, selected, storageKey, render, buttonId) {
+        function updateFilterButton(buttonId, selectedPackages, selectedMeasures) {
+            const count = selectedPackages.size + selectedMeasures.size;
+            document.getElementById(buttonId).textContent = count ? `⚗ Разфасовки (${count})` : '⚗ Разфасовки';
+        }
+
+        function populatePackageOptions(containerId, products, selected, storageKey, render, buttonId, selectedMeasures) {
             const container = document.getElementById(containerId);
             const counts = new Map();
             products.forEach(product => {
@@ -470,7 +503,13 @@
                 counts.set(key, (counts.get(key) || 0) + 1);
             });
             container.replaceChildren();
-            [...counts.entries()].sort((a, b) => (Number(a[0]) || Number.MAX_VALUE) - (Number(b[0]) || Number.MAX_VALUE)).forEach(([key, count]) => {
+            [...counts.entries()].sort((a, b) => {
+                if (a[0] === 'unknown') return 1;
+                if (b[0] === 'unknown') return -1;
+                const [aUnit, aAmount] = a[0].split(':');
+                const [bUnit, bAmount] = b[0].split(':');
+                return aUnit === bUnit ? Number(aAmount) - Number(bAmount) : aUnit.localeCompare(bUnit);
+            }).forEach(([key, count]) => {
                 const label = document.createElement('label');
                 const input = document.createElement('input');
                 input.type = 'checkbox';
@@ -478,13 +517,13 @@
                 input.addEventListener('change', () => {
                     input.checked ? selected.add(key) : selected.delete(key);
                     localStorage.setItem(storageKey, JSON.stringify([...selected]));
-                    document.getElementById(buttonId).textContent = selected.size ? `⚗ Разфасовки (${selected.size})` : '⚗ Разфасовки';
+                    updateFilterButton(buttonId, selected, selectedMeasures);
                     render();
                 });
                 label.append(input, document.createTextNode(` ${packageLabel(key)} (${count})`));
                 container.appendChild(label);
             });
-            document.getElementById(buttonId).textContent = selected.size ? `⚗ Разфасовки (${selected.size})` : '⚗ Разфасовки';
+            updateFilterButton(buttonId, selected, selectedMeasures);
         }
 
         const metroPackageButton = document.getElementById('metro-package-button');
@@ -496,10 +535,22 @@
             metroPackageButton.setAttribute('aria-expanded', isOpen);
         });
         metroPackageMenu.addEventListener('click', event => event.stopPropagation());
+        document.querySelectorAll('[data-metro-measure]').forEach(input => {
+            input.checked = selectedMetroMeasures.has(input.dataset.metroMeasure);
+            input.addEventListener('change', () => {
+                input.checked ? selectedMetroMeasures.add(input.dataset.metroMeasure) : selectedMetroMeasures.delete(input.dataset.metroMeasure);
+                localStorage.setItem('metro-measure-filter-v1', JSON.stringify([...selectedMetroMeasures]));
+                updateFilterButton('metro-package-button', selectedMetroPackages, selectedMetroMeasures);
+                renderMetroRows();
+            });
+        });
         document.getElementById('metro-package-clear').addEventListener('click', () => {
             selectedMetroPackages.clear();
+            selectedMetroMeasures.clear();
             localStorage.removeItem('metro-package-filter-v1');
-            populatePackageOptions('metro-package-options', metroProducts, selectedMetroPackages, 'metro-package-filter-v1', renderMetroRows, 'metro-package-button');
+            localStorage.removeItem('metro-measure-filter-v1');
+            document.querySelectorAll('[data-metro-measure]').forEach(input => input.checked = false);
+            populatePackageOptions('metro-package-options', metroProducts, selectedMetroPackages, 'metro-package-filter-v1', renderMetroRows, 'metro-package-button', selectedMetroMeasures);
             renderMetroRows();
         });
 
@@ -509,7 +560,7 @@
             event.preventDefault();
             metroTableScroll.scrollLeft += event.deltaY || event.deltaX;
         }, {passive: false});
-        const metroColumns = ['catalogCode', 'supplierCode', null, 'name', 'packageWeight', 'unitsPerPackage', 'trademark', 'price', 'pricePerKg', 'addedAt'];
+        const metroColumns = ['catalogCode', 'supplierCode', null, 'name', 'packageWeight', 'unitsPerPackage', 'totalQuantity', 'measureUnit', 'trademark', 'price', 'pricePerUnit', 'pricePerMeasure', 'addedAt'];
         document.querySelectorAll('#metro-price-table th').forEach((header, index) => {
             const key = metroColumns[index];
             if (!key) return;
@@ -524,7 +575,7 @@
 
         function metroComparable(product, key) {
             const value = product[key] || '';
-            if (key === 'price' || key === 'pricePerKg' || key === 'packageWeight' || key === 'unitsPerPackage') {
+            if (key === 'price' || key === 'pricePerUnit' || key === 'pricePerMeasure' || key === 'packageWeight' || key === 'totalQuantity' || key === 'unitsPerPackage') {
                 const number = parseFloat(value.replace(',', '.').replace(/[^0-9.]/g, ''));
                 return Number.isNaN(number) ? Number.MAX_VALUE : number;
             }
@@ -541,9 +592,9 @@
 
         function renderMetroRows() {
             const body = document.getElementById('metro-products-body');
-            const filtered = selectedMetroPackages.size
-                ? metroProducts.filter(product => selectedMetroPackages.has(packageKey(product)))
-                : metroProducts;
+            const filtered = metroProducts.filter(product =>
+                (!selectedMetroPackages.size || selectedMetroPackages.has(packageKey(product)))
+                && (!selectedMetroMeasures.size || selectedMetroMeasures.has(product.measureUnit)));
             const sorted = [...filtered].sort((left, right) => {
                 const a = metroComparable(left, metroSortKey);
                 const b = metroComparable(right, metroSortKey);
@@ -579,9 +630,12 @@
                 addMetroCell(row, product.name, '', 'name');
                 addMetroCell(row, product.packageWeight || product.packageSize, '', 'packageWeight');
                 addMetroCell(row, product.unitsPerPackage, '', 'unitsPerPackage');
+                addMetroCell(row, product.totalQuantity, '', 'totalQuantity');
+                addMetroCell(row, product.measureUnit, '', 'measureUnit');
                 addMetroCell(row, product.trademark, '', 'trademark');
                 addMetroCell(row, product.price, 'price', 'price');
-                addMetroCell(row, product.pricePerKg, 'price-per-kg', 'pricePerKg');
+                addMetroCell(row, product.pricePerUnit, 'unit-price', 'pricePerUnit');
+                addMetroCell(row, product.pricePerMeasure || product.pricePerKg || product.pricePerLiter, 'unit-price', 'pricePerMeasure');
                 addMetroCell(row, product.addedAt ? new Date(product.addedAt).toLocaleString('bg-BG') : '', '', 'addedAt');
                 body.appendChild(row);
             });
@@ -598,7 +652,7 @@
                 .then(data => {
                     if (data.products.length > 0) {
                         metroProducts = data.products;
-                        populatePackageOptions('metro-package-options', metroProducts, selectedMetroPackages, 'metro-package-filter-v1', renderMetroRows, 'metro-package-button');
+                        populatePackageOptions('metro-package-options', metroProducts, selectedMetroPackages, 'metro-package-filter-v1', renderMetroRows, 'metro-package-button', selectedMetroMeasures);
                         renderMetroRows();
                         document.getElementById('metro-loading')?.remove();
                     }
@@ -617,11 +671,13 @@
         let gourmetSortKey = 'name';
         let gourmetSortDirection = 1;
         let gourmetLoadingStarted = false;
-        const defaultGourmetColumns = ['catalogCode', 'supplierCode', 'image', 'name', 'category', 'packageWeight', 'unitsPerPackage', 'price', 'pricePerKg', 'addedAt'];
+        const defaultGourmetColumns = ['catalogCode', 'supplierCode', 'image', 'name', 'category', 'packageWeight', 'unitsPerPackage', 'totalQuantity', 'measureUnit', 'price', 'pricePerUnit', 'pricePerMeasure', 'addedAt'];
         let visibleGourmetColumns;
         let selectedGourmetPackages = new Set(JSON.parse(localStorage.getItem('gourmet-package-filter-v1') || '[]'));
+        let selectedGourmetMeasures = new Set(JSON.parse(localStorage.getItem('gourmet-measure-filter-v1') || '[]'));
+        if ([...selectedGourmetPackages].some(key => !key.includes(':'))) selectedGourmetPackages.clear();
         try {
-            visibleGourmetColumns = new Set(JSON.parse(localStorage.getItem('gourmet-visible-columns-v1')) || defaultGourmetColumns);
+            visibleGourmetColumns = new Set(JSON.parse(localStorage.getItem('gourmet-visible-columns-v3')) || defaultGourmetColumns);
         } catch (_) {
             visibleGourmetColumns = new Set(defaultGourmetColumns);
         }
@@ -658,19 +714,31 @@
                 const column = input.dataset.gourmetToggle;
                 input.checked ? visibleGourmetColumns.add(column) : visibleGourmetColumns.delete(column);
                 if (visibleGourmetColumns.size === 0) visibleGourmetColumns.add('name');
-                localStorage.setItem('gourmet-visible-columns-v1', JSON.stringify([...visibleGourmetColumns]));
+                localStorage.setItem('gourmet-visible-columns-v3', JSON.stringify([...visibleGourmetColumns]));
                 applyGourmetColumnVisibility();
+            });
+        });
+        document.querySelectorAll('[data-gourmet-measure]').forEach(input => {
+            input.checked = selectedGourmetMeasures.has(input.dataset.gourmetMeasure);
+            input.addEventListener('change', () => {
+                input.checked ? selectedGourmetMeasures.add(input.dataset.gourmetMeasure) : selectedGourmetMeasures.delete(input.dataset.gourmetMeasure);
+                localStorage.setItem('gourmet-measure-filter-v1', JSON.stringify([...selectedGourmetMeasures]));
+                updateFilterButton('gourmet-package-button', selectedGourmetPackages, selectedGourmetMeasures);
+                renderGourmetRows();
             });
         });
         document.getElementById('gourmet-package-clear').addEventListener('click', () => {
             selectedGourmetPackages.clear();
+            selectedGourmetMeasures.clear();
             localStorage.removeItem('gourmet-package-filter-v1');
-            populatePackageOptions('gourmet-package-options', gourmetProducts, selectedGourmetPackages, 'gourmet-package-filter-v1', renderGourmetRows, 'gourmet-package-button');
+            localStorage.removeItem('gourmet-measure-filter-v1');
+            document.querySelectorAll('[data-gourmet-measure]').forEach(input => input.checked = false);
+            populatePackageOptions('gourmet-package-options', gourmetProducts, selectedGourmetPackages, 'gourmet-package-filter-v1', renderGourmetRows, 'gourmet-package-button', selectedGourmetMeasures);
             renderGourmetRows();
         });
 
         function gourmetComparable(product, key) {
-            if (key === 'priceMin' || key === 'packageGrams' || key === 'unitsPerPackage' || key === 'pricePerKg') {
+            if (key === 'priceMin' || key === 'packageBaseQuantity' || key === 'unitsPerPackage' || key === 'pricePerUnit' || key === 'pricePerMeasure') {
                 const numeric = Number(String(product[key] || '').replace(',', '.').replace(/[^0-9.]/g, ''));
                 return Number.isFinite(numeric) ? numeric : Number.MAX_VALUE;
             }
@@ -688,9 +756,9 @@
 
         function renderGourmetRows() {
             const body = document.getElementById('gourmet-products-body');
-            const filtered = selectedGourmetPackages.size
-                ? gourmetProducts.filter(product => selectedGourmetPackages.has(packageKey(product)))
-                : gourmetProducts;
+            const filtered = gourmetProducts.filter(product =>
+                (!selectedGourmetPackages.size || selectedGourmetPackages.has(packageKey(product)))
+                && (!selectedGourmetMeasures.size || selectedGourmetMeasures.has(product.measureUnit)));
             const sorted = [...filtered].sort((left, right) => {
                 const a = gourmetComparable(left, gourmetSortKey);
                 const b = gourmetComparable(right, gourmetSortKey);
@@ -730,8 +798,11 @@
                 addGourmetCell(row, product.category, '', 'category');
                 addGourmetCell(row, product.packageWeight, '', 'packageWeight');
                 addGourmetCell(row, product.unitsPerPackage, '', 'unitsPerPackage');
+                addGourmetCell(row, product.totalQuantity, '', 'totalQuantity');
+                addGourmetCell(row, product.measureUnit, '', 'measureUnit');
                 addGourmetCell(row, product.price, 'price', 'price');
-                addGourmetCell(row, product.pricePerKg, 'price-per-kg', 'pricePerKg');
+                addGourmetCell(row, product.pricePerUnit, 'unit-price', 'pricePerUnit');
+                addGourmetCell(row, product.pricePerMeasure || product.pricePerKg || product.pricePerLiter, 'unit-price', 'pricePerMeasure');
                 addGourmetCell(row, product.addedAt, '', 'addedAt');
                 body.appendChild(row);
             });
@@ -776,7 +847,7 @@
                 .then(data => {
                     if (data.products.length > 0) {
                         gourmetProducts = data.products;
-                        populatePackageOptions('gourmet-package-options', gourmetProducts, selectedGourmetPackages, 'gourmet-package-filter-v1', renderGourmetRows, 'gourmet-package-button');
+                        populatePackageOptions('gourmet-package-options', gourmetProducts, selectedGourmetPackages, 'gourmet-package-filter-v1', renderGourmetRows, 'gourmet-package-button', selectedGourmetMeasures);
                         renderGourmetRows();
                         document.getElementById('gourmet-loading').style.display = 'none';
                     }
