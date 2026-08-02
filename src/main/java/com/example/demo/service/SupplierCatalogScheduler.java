@@ -7,14 +7,17 @@ import org.springframework.stereotype.Component;
 public class SupplierCatalogScheduler {
 
     private final GourmetSpiceService gourmetSpiceService;
+    private final MetroCatalogService metroCatalogService;
 
-    public SupplierCatalogScheduler(GourmetSpiceService gourmetSpiceService) {
+    public SupplierCatalogScheduler(GourmetSpiceService gourmetSpiceService, MetroCatalogService metroCatalogService) {
         this.gourmetSpiceService = gourmetSpiceService;
+        this.metroCatalogService = metroCatalogService;
     }
 
     @Scheduled(cron = "${catalog.refresh.cron}", zone = "${catalog.refresh.zone}")
     public void refreshSupplierCatalogsAtShiftStart() {
         gourmetSpiceService.refreshNow();
         MetroScraperService.refreshNow();
+        metroCatalogService.attachCatalogCodes(MetroScraperService.getCachedProductsAndRefresh());
     }
 }

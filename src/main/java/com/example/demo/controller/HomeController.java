@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.service.MetroScraperService;
 import com.example.demo.service.GourmetSpiceService;
+import com.example.demo.service.MetroCatalogService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
@@ -26,9 +27,11 @@ import java.time.Duration;
 public class HomeController {
 
     private final GourmetSpiceService gourmetSpiceService;
+    private final MetroCatalogService metroCatalogService;
 
-    public HomeController(GourmetSpiceService gourmetSpiceService) {
+    public HomeController(GourmetSpiceService gourmetSpiceService, MetroCatalogService metroCatalogService) {
         this.gourmetSpiceService = gourmetSpiceService;
+        this.metroCatalogService = metroCatalogService;
     }
 
     @GetMapping("/")
@@ -62,7 +65,7 @@ public class HomeController {
 
         // Metro.bg spice prices
         try {
-            List<Map<String, String>> metroProducts = MetroScraperService.getCachedProductsAndRefresh();
+            List<Map<String, String>> metroProducts = metroCatalogService.attachCatalogCodes(MetroScraperService.getCachedProductsAndRefresh());
             model.addAttribute("metroProducts", metroProducts);
         } catch (Exception e) {
             model.addAttribute("metroError", e.getMessage());
@@ -77,7 +80,7 @@ public class HomeController {
     @GetMapping("/api/metro-prices")
     @ResponseBody
     public Map<String, Object> metroPrices() {
-        List<Map<String, String>> products = MetroScraperService.getCachedProductsAndRefresh();
+        List<Map<String, String>> products = metroCatalogService.attachCatalogCodes(MetroScraperService.getCachedProductsAndRefresh());
         return Map.of(
                 "products", products,
                 "refreshing", MetroScraperService.isRefreshing(),

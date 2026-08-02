@@ -4,7 +4,9 @@ The local catalog separates HOREMAG products from supplier listings:
 
 - `catalog_product` — the HOREMAG master product and stable `HMG-xxxxxx` code.
 - `supplier_product` — a listing from METRO, Gourmet Spice, or another supplier, linked to one master product.
-- `catalog_price_history` — supplier price history; a row is added only when the price changes.
+- `supplier_offer` — one exact purchasable package/variation with its own weight, price, and price per kilogram.
+- `supplier_offer_price_history` — exact offer price history; a row is added only when the price changes.
+- `catalog_price_history` — history of the parent product's minimum and maximum supplier price.
 
 This structure also supports future non-food categories such as cups, takeaway packaging, and catering consumables.
 

@@ -13,6 +13,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -41,6 +43,8 @@ import java.util.regex.Pattern;
  * Metro.bg spice price scraper using Selenium WebDriver for JS-rendered pages.
  */
 public class MetroScraperService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MetroScraperService.class);
 
     private static final Path CACHE_FILE = Path.of("data", "metro-products.json");
     public static final Path IMAGE_CACHE_DIR = Path.of("data", "metro-images");
@@ -338,21 +342,25 @@ public class MetroScraperService {
             publishSnapshot(new ArrayList<>(collected.values()));
         } catch (Exception ignored) { }
 
-        for (int page = 0; page < 12 && collected.size() < MAX_PRODUCTS; page++) {
+        for (int page = 0; page < 15 && collected.size() < MAX_PRODUCTS; page++) {
             List<WebElement> buttons = findLoadMoreButtons(driver);
-            if (buttons.isEmpty() || !buttons.get(0).isDisplayed()) break;
+            LOG.info("METRO page {}: {} collected, {} rendered cards, {} load-more buttons",
+                    page, collected.size(), driver.findElements(By.cssSelector(".sd-articlecard")).size(), buttons.size());
+            if (buttons.isEmpty()) break;
 
             int previousProductCount = collected.size();
+            int previousRenderedCount = driver.findElements(By.cssSelector(".sd-articlecard")).size();
             try {
                 WebElement button = buttons.get(0);
                 ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
-                        "arguments[0].scrollIntoView({block:'center'});", button);
-                wait.until(ExpectedConditions.elementToBeClickable(button)).click();
-                wait.until(d -> countNewRenderedProducts(d, collected) > 0);
+                        "arguments[0].scrollIntoView({block:'center'}); arguments[0].click();", button);
+                wait.until(d -> d.findElements(By.cssSelector(".sd-articlecard")).size() > previousRenderedCount);
                 collectRenderedCards(driver, collected);
                 publishSnapshot(new ArrayList<>(collected.values()));
                 if (collected.size() <= previousProductCount) break;
             } catch (Exception ignored) {
+                LOG.warn("METRO load-more stopped on page {} after {} products: {}",
+                        page, collected.size(), ignored.toString());
                 break;
             }
         }
@@ -362,8 +370,8 @@ public class MetroScraperService {
 
     private List<WebElement> findLoadMoreButtons(WebDriver driver) {
         List<WebElement> buttons = driver.findElements(By.cssSelector("a.mfcss_load-more-articles"));
-        if (!buttons.isEmpty()) return buttons;
-        return driver.findElements(By.xpath("//a[contains(., 'Покажи още')]"));
+        if (buttons.isEmpty()) buttons = driver.findElements(By.xpath("//a[contains(., 'Покажи още')]") );
+        return buttons;
     }
 
     private long countNewRenderedProducts(WebDriver driver,
