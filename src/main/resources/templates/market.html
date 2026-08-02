@@ -53,6 +53,9 @@
             margin-top: 1rem;
             font-size: 0.85rem;
         }
+        html, body { overflow-x: hidden; }
+        .card { max-width: 100%; overflow: hidden; }
+        .price-table { min-width: 720px; }
         .price-table th {
             background: #1a1a2e;
             color: #fff;
@@ -194,17 +197,17 @@
                         <strong>Грешка (Metro):</strong> <span th:text="${metroError}">error</span>
                     </div>
 
-                    <div th:if="${metroError == null && metroProducts != null && !metroProducts.isEmpty()}" class="info-banner">
+                    <div id="metro-status" class="info-banner">
                         📋 Metro.bg: намерени са <strong th:text="${#lists.size(metroProducts)}">0</strong> продукта
                     </div>
 
-                    <div th:if="${metroProducts == null || metroProducts.isEmpty()}" class="loading-indicator">
+                    <div id="metro-loading" th:if="${metroProducts == null || metroProducts.isEmpty()}" class="loading-indicator">
                         <div class="spinner"></div>
                         <p>Зареждане на цени от Metro.bg...</p>
                     </div>
 
-                    <div th:if="${metroProducts != null && !metroProducts.isEmpty()}" style="overflow-x: auto;">
-                        <table class="price-table">
+                    <div id="metro-table-scroll" style="overflow-x: auto; max-width: 100%;">
+                        <table id="metro-price-table" class="price-table">
                             <thead>
                                 <tr>
                                     <th>Снимка</th>
@@ -213,9 +216,10 @@
                                     <th>Марка</th>
                                     <th>Цена</th>
                                     <th>Цена/кг</th>
+                                    <th>Добавен на</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="metro-products-body">
                                 <tr th:each="p : ${metroProducts}">
                                     <td>
                                         <img th:if="${p.imageUrl != null && !p.imageUrl.isEmpty()}" th:src="${p.imageUrl}" class="product-img">
@@ -226,6 +230,7 @@
                                     <td th:text="${p.trademark} ?: '—'">—</td>
                                     <td class="price" th:text="${p.price}">—</td>
                                     <td class="price-per-kg" th:text="${p.pricePerKg} ?: '—'">—</td>
+                                    <td th:text="${p.addedAt} ?: '—'">—</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -288,6 +293,23 @@
     </div>
 
     <script>
+        // The initial HTML is served from the local cache. Poll in the background
+        // and redraw it once the asynchronous METRO refresh has completed.
+        const initialMetroCount = /*[[${metroProducts != null ? #lists.size(metroProducts) : 0}]]*/ 0;
+        function refreshMetroWhenReady() {
+            fetch('/api/metro-prices')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.products.length !== initialMetroCount && !data.refreshing) {
+                        window.location.reload();
+                        return;
+                    }
+                    if (data.refreshing) window.setTimeout(refreshMetroWhenReady, 2500);
+                })
+                .catch(() => window.setTimeout(refreshMetroWhenReady, 5000));
+        }
+        window.setTimeout(refreshMetroWhenReady, 1000);
+
         function switchTab(tabId) {
             document.querySelectorAll('.store-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.store-tab').forEach(t => t.classList.remove('active'));

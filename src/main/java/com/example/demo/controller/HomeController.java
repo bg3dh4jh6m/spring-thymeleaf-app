@@ -5,6 +5,7 @@ import com.example.demo.service.MetroScraperService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -46,23 +47,26 @@ public class HomeController {
 
         // Metro.bg spice prices
         try {
-            MetroScraperService metroScraper = new MetroScraperService();
-            List<Map<String, String>> metroProducts = metroScraper.scrapeSpicePrices();
+            List<Map<String, String>> metroProducts = MetroScraperService.getCachedProductsAndRefresh();
             model.addAttribute("metroProducts", metroProducts);
         } catch (Exception e) {
             model.addAttribute("metroError", e.getMessage());
         }
 
-        // Kaufland.bg offers (spices, dried fruits, nuts, mushrooms)
-        try {
-            KauflandScraperService kauflandScraper = new KauflandScraperService();
-            List<Map<String, String>> kauflandProducts = kauflandScraper.scrapeProducts();
-            model.addAttribute("kauflandProducts", kauflandProducts);
-        } catch (Exception e) {
-            model.addAttribute("kauflandError", e.getMessage());
-        }
+        // Never block the initial page render with another external website.
+        model.addAttribute("kauflandProducts", List.of());
 
         return "market";
+    }
+
+    @GetMapping("/api/metro-prices")
+    @ResponseBody
+    public Map<String, Object> metroPrices() {
+        List<Map<String, String>> products = MetroScraperService.getCachedProductsAndRefresh();
+        return Map.of(
+                "products", products,
+                "refreshing", MetroScraperService.isRefreshing(),
+                "error", MetroScraperService.getLastError());
     }
 
     @GetMapping("/sales")

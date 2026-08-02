@@ -35,39 +35,39 @@
 
  :: Spring Boot ::                (v3.5.3)
 
-2026-08-02T17:47:24.536+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] com.example.demo.DemoApplication         : Starting DemoApplication using Java 25.0.3 with PID 12864 (C:\Users\nn854\Desktop\spring-thymeleaf-app\target\classes started by nn854 in C:\Users\nn854\Desktop\spring-thymeleaf-app)
-2026-08-02T17:47:24.542+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] com.example.demo.DemoApplication         : No active profile set, falling back to 1 default profile: "default"
-2026-08-02T17:47:24.544+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.boot.SpringApplication               : Loading source class com.example.demo.DemoApplication
-2026-08-02T17:47:24.612+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.devtools.restart.ChangeableUrls    : Matching URLs for reloading : [file:/C:/Users/nn854/Desktop/spring-thymeleaf-app/target/classes/]
-2026-08-02T17:47:24.613+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.d.settings.DevToolsSettings        : Included patterns for restart : []
-2026-08-02T17:47:24.613+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.d.settings.DevToolsSettings        : Excluded patterns for restart : [/spring-boot-starter-[\w-]+/, /spring-boot/(bin|build|out)/, /spring-boot-starter/(bin|build|out)/, /spring-boot-devtools/(bin|build|out)/, /spring-boot-actuator/(bin|build|out)/, /spring-boot-autoconfigure/(bin|build|out)/]
-2026-08-02T17:47:24.613+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2026-08-02T17:47:24.614+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2026-08-02T17:47:24.615+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@1c8eaa82
-2026-08-02T17:47:25.662+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\nn854\.m2\repository\org\springframework\boot\spring-boot\3.5.3\spring-boot-3.5.3.jar
-2026-08-02T17:47:25.663+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\nn854\.m2\repository\org\springframework\boot\spring-boot\3.5.3\spring-boot-3.5.3.jar
-2026-08-02T17:47:25.666+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] .s.b.w.e.t.TomcatServletWebServerFactory : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
-2026-08-02T17:47:25.747+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2026-08-02T17:47:25.771+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-02T17:47:25.772+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
-2026-08-02T17:47:25.838+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-08-02T17:47:25.839+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
-2026-08-02T17:47:25.840+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1224 ms
-2026-08-02T17:47:25.856+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105
-2026-08-02T17:47:25.857+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
-2026-08-02T17:47:25.890+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.s.f.OrderedRequestContextFilter  : Filter 'requestContextFilter' configured for use
-2026-08-02T17:47:25.892+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] s.b.w.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
-2026-08-02T17:47:25.892+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.s.f.OrderedFormContentFilter     : Filter 'formContentFilter' configured for use
-2026-08-02T17:47:25.981+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
-2026-08-02T17:47:26.068+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 8 mappings in 'requestMappingHandlerMapping'
-2026-08-02T17:47:26.093+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.example.demo'. Automatic @Repository and @Entity scanning is enabled.
-2026-08-02T17:47:26.140+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2026-08-02T17:47:26.162+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2026-08-02T17:47:26.259+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
-2026-08-02T17:47:26.397+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.d.livereload.LiveReloadServer      : Starting live reload server on port 35729
-2026-08-02T17:47:26.413+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2026-08-02T17:47:26.469+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-2026-08-02T17:47:26.483+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+2026-08-02T17:58:20.649+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] com.example.demo.DemoApplication         : Starting DemoApplication using Java 25.0.3 with PID 9036 (C:\Users\nn854\Desktop\spring-thymeleaf-app\target\classes started by nn854 in C:\Users\nn854\Desktop\spring-thymeleaf-app)
+2026-08-02T17:58:20.653+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] com.example.demo.DemoApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-08-02T17:58:20.654+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.boot.SpringApplication               : Loading source class com.example.demo.DemoApplication
+2026-08-02T17:58:20.710+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.devtools.restart.ChangeableUrls    : Matching URLs for reloading : [file:/C:/Users/nn854/Desktop/spring-thymeleaf-app/target/classes/]
+2026-08-02T17:58:20.711+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.d.settings.DevToolsSettings        : Included patterns for restart : []
+2026-08-02T17:58:20.712+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.d.settings.DevToolsSettings        : Excluded patterns for restart : [/spring-boot-starter-[\w-]+/, /spring-boot/(bin|build|out)/, /spring-boot-starter/(bin|build|out)/, /spring-boot-devtools/(bin|build|out)/, /spring-boot-actuator/(bin|build|out)/, /spring-boot-autoconfigure/(bin|build|out)/]
+2026-08-02T17:58:20.712+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-08-02T17:58:20.713+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-08-02T17:58:20.714+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@1c8eaa82
+2026-08-02T17:58:21.736+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\nn854\.m2\repository\org\springframework\boot\spring-boot\3.5.3\spring-boot-3.5.3.jar
+2026-08-02T17:58:21.775+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\nn854\.m2\repository\org\springframework\boot\spring-boot\3.5.3\spring-boot-3.5.3.jar
+2026-08-02T17:58:21.782+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] .s.b.w.e.t.TomcatServletWebServerFactory : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
+2026-08-02T17:58:21.846+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-08-02T17:58:21.863+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-02T17:58:21.864+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2026-08-02T17:58:21.922+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-08-02T17:58:21.924+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
+2026-08-02T17:58:21.925+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1210 ms
+2026-08-02T17:58:21.942+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105
+2026-08-02T17:58:21.943+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
+2026-08-02T17:58:21.965+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.s.f.OrderedRequestContextFilter  : Filter 'requestContextFilter' configured for use
+2026-08-02T17:58:21.967+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] s.b.w.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
+2026-08-02T17:58:21.967+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.s.f.OrderedFormContentFilter     : Filter 'formContentFilter' configured for use
+2026-08-02T17:58:22.059+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2026-08-02T17:58:22.143+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 9 mappings in 'requestMappingHandlerMapping'
+2026-08-02T17:58:22.173+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.example.demo'. Automatic @Repository and @Entity scanning is enabled.
+2026-08-02T17:58:22.217+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2026-08-02T17:58:22.234+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-08-02T17:58:22.313+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-08-02T17:58:22.440+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.d.livereload.LiveReloadServer      : Starting live reload server on port 35729
+2026-08-02T17:58:22.490+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-08-02T17:58:22.542+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-08-02T17:58:22.556+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
 
 
 ============================
@@ -1130,30 +1130,183 @@ Unconditional classes:
 
 
 
-2026-08-02T17:47:26.488+03:00  INFO 12864 --- [spring-thymeleaf-app] [  restartedMain] com.example.demo.DemoApplication         : Started DemoApplication in 2.614 seconds (process running for 3.196)
-2026-08-02T17:47:26.491+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
-2026-08-02T17:47:26.501+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.boot.devtools.restart.Restarter      : Creating new Restarter for thread Thread[#3,main,5,main]
-2026-08-02T17:47:26.501+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.boot.devtools.restart.Restarter      : Immediately restarting application
-2026-08-02T17:47:26.502+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.boot.devtools.restart.Restarter      : Starting application com.example.demo.DemoApplication with URLs [file:/C:/Users/nn854/Desktop/spring-thymeleaf-app/target/classes/]
-2026-08-02T17:47:26.503+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
-2026-08-02T17:47:38.043+03:00  INFO 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-08-02T17:47:38.044+03:00  INFO 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-08-02T17:47:38.045+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
-2026-08-02T17:47:38.046+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
-2026-08-02T17:47:38.047+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
-2026-08-02T17:47:38.048+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@6d01bec
-2026-08-02T17:47:38.049+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@45a2ad92
-2026-08-02T17:47:38.050+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
-2026-08-02T17:47:38.050+03:00  INFO 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
-2026-08-02T17:47:38.058+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/", parameters={}
-2026-08-02T17:47:38.071+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#home(Model)
-2026-08-02T17:47:38.100+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.w.s.v.ContentNegotiatingViewResolver : Selected '*/*' given [*/*]
-2026-08-02T17:47:38.374+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-2026-08-02T17:47:43.405+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/market", parameters={}
-2026-08-02T17:47:43.447+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#market(Model)
-2026-08-02T17:47:44.752+03:00  INFO 12864 --- [spring-thymeleaf-app] [nio-8080-exec-4] i.g.bonigarcia.wdm.WebDriverManager      : Using chromedriver 150.0.7871.124 (resolved driver for Chrome 150)
-2026-08-02T17:47:44.825+03:00  INFO 12864 --- [spring-thymeleaf-app] [nio-8080-exec-4] i.g.bonigarcia.wdm.WebDriverManager      : Exporting webdriver.chrome.driver as C:\Users\nn854\.cache\selenium\chromedriver\win64\150.0.7871.124\chromedriver.exe
-2026-08-02T17:47:47.520+03:00  WARN 12864 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.o.selenium.devtools.CdpVersionFinder   : Unable to find CDP implementation matching 150
-2026-08-02T17:47:47.521+03:00  WARN 12864 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.o.selenium.chromium.ChromiumDriver     : Unable to find version of CDP to use for 150.0.7871.187. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.31.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
-2026-08-02T17:48:52.353+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.w.s.v.ContentNegotiatingViewResolver : Selected '*/*' given [*/*]
-2026-08-02T17:48:52.404+03:00 DEBUG 12864 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:22.561+03:00  INFO 9036 --- [spring-thymeleaf-app] [  restartedMain] com.example.demo.DemoApplication         : Started DemoApplication in 2.38 seconds (process running for 2.96)
+2026-08-02T17:58:22.563+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
+2026-08-02T17:58:22.573+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.boot.devtools.restart.Restarter      : Creating new Restarter for thread Thread[#3,main,5,main]
+2026-08-02T17:58:22.575+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.boot.devtools.restart.Restarter      : Immediately restarting application
+2026-08-02T17:58:22.576+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.boot.devtools.restart.Restarter      : Starting application com.example.demo.DemoApplication with URLs [file:/C:/Users/nn854/Desktop/spring-thymeleaf-app/target/classes/]
+2026-08-02T17:58:22.576+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [  restartedMain] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+2026-08-02T17:58:23.951+03:00  INFO 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-02T17:58:23.953+03:00  INFO 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-02T17:58:23.956+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2026-08-02T17:58:23.957+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2026-08-02T17:58:23.959+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2026-08-02T17:58:23.960+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@5f04d013
+2026-08-02T17:58:23.962+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@762da9c4
+2026-08-02T17:58:23.963+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-08-02T17:58:23.964+03:00  INFO 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 9 ms
+2026-08-02T17:58:23.975+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/market", parameters={}
+2026-08-02T17:58:23.990+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#market(Model)
+2026-08-02T17:58:24.360+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Using chromedriver 150.0.7871.124 (resolved driver for Chrome 150)
+2026-08-02T17:58:24.383+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Exporting webdriver.chrome.driver as C:\Users\nn854\.cache\selenium\chromedriver\win64\150.0.7871.124\chromedriver.exe
+2026-08-02T17:58:24.886+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.w.s.v.ContentNegotiatingViewResolver : Selected 'text/html' given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7]
+2026-08-02T17:58:25.573+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/css/style.css", parameters={}
+2026-08-02T17:58:25.578+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-08-02T17:58:25.597+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:25.611+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:25.665+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.devtools.CdpVersionFinder   : Unable to find CDP implementation matching 150
+2026-08-02T17:58:25.667+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.chromium.ChromiumDriver     : Unable to find version of CDP to use for 150.0.7871.187. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.31.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+2026-08-02T17:58:26.814+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:26.816+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:26.866+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:26.871+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:26.893+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:29.400+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:29.439+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:29.441+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:29.442+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:29.445+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:31.964+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:32.003+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:32.004+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:32.005+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:32.007+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:34.516+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:34.518+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:34.519+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:34.520+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:34.522+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:34.532+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Using chromedriver 150.0.7871.124 (resolved driver for Chrome 150)
+2026-08-02T17:58:34.537+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Exporting webdriver.chrome.driver as C:\Users\nn854\.cache\selenium\chromedriver\win64\150.0.7871.124\chromedriver.exe
+2026-08-02T17:58:35.340+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.devtools.CdpVersionFinder   : Unable to find CDP implementation matching 150
+2026-08-02T17:58:35.380+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.chromium.ChromiumDriver     : Unable to find version of CDP to use for 150.0.7871.187. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.31.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+2026-08-02T17:58:37.029+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:37.068+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:37.070+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:37.071+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:37.073+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:39.578+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:39.618+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:39.620+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:39.621+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:39.623+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:42.131+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:42.174+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:42.176+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:42.177+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:42.178+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:44.693+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:44.736+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:44.740+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:44.742+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:44.745+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:44.762+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Using chromedriver 150.0.7871.124 (resolved driver for Chrome 150)
+2026-08-02T17:58:44.770+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Exporting webdriver.chrome.driver as C:\Users\nn854\.cache\selenium\chromedriver\win64\150.0.7871.124\chromedriver.exe
+2026-08-02T17:58:45.559+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.devtools.CdpVersionFinder   : Unable to find CDP implementation matching 150
+2026-08-02T17:58:45.598+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.chromium.ChromiumDriver     : Unable to find version of CDP to use for 150.0.7871.187. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.31.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+2026-08-02T17:58:47.256+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:47.257+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:47.258+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:47.259+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:47.260+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:49.771+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:49.774+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:49.775+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:49.775+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:49.777+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:52.285+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:52.286+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:52.300+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:52.301+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:52.304+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:54.815+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:54.855+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:54.858+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:54.859+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:54.861+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:54.870+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Using chromedriver 150.0.7871.124 (resolved driver for Chrome 150)
+2026-08-02T17:58:54.876+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Exporting webdriver.chrome.driver as C:\Users\nn854\.cache\selenium\chromedriver\win64\150.0.7871.124\chromedriver.exe
+2026-08-02T17:58:55.747+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.devtools.CdpVersionFinder   : Unable to find CDP implementation matching 150
+2026-08-02T17:58:55.785+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.chromium.ChromiumDriver     : Unable to find version of CDP to use for 150.0.7871.187. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.31.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+2026-08-02T17:58:57.377+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:57.379+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:57.381+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:57.382+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:57.384+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:58:59.898+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:58:59.935+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:58:59.939+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:58:59.942+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:58:59.945+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:02.491+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:02.493+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:02.495+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:02.496+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:02.498+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:05.014+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:05.055+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:05.059+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:05.062+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:05.064+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:05.085+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Using chromedriver 150.0.7871.124 (resolved driver for Chrome 150)
+2026-08-02T17:59:05.102+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Exporting webdriver.chrome.driver as C:\Users\nn854\.cache\selenium\chromedriver\win64\150.0.7871.124\chromedriver.exe
+2026-08-02T17:59:05.960+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.devtools.CdpVersionFinder   : Unable to find CDP implementation matching 150
+2026-08-02T17:59:05.960+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.chromium.ChromiumDriver     : Unable to find version of CDP to use for 150.0.7871.187. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.31.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+2026-08-02T17:59:07.571+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:07.575+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:07.577+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:07.578+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:07.580+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:10.091+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:10.095+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:10.096+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:10.097+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:10.099+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:12.607+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:12.608+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:12.609+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:12.610+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:12.612+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:15.123+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:15.125+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:15.127+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:15.129+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:15.131+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:15.155+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Using chromedriver 150.0.7871.124 (resolved driver for Chrome 150)
+2026-08-02T17:59:15.164+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Exporting webdriver.chrome.driver as C:\Users\nn854\.cache\selenium\chromedriver\win64\150.0.7871.124\chromedriver.exe
+2026-08-02T17:59:15.953+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.devtools.CdpVersionFinder   : Unable to find CDP implementation matching 150
+2026-08-02T17:59:15.954+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.chromium.ChromiumDriver     : Unable to find version of CDP to use for 150.0.7871.187. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.31.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+2026-08-02T17:59:17.646+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:17.647+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:17.647+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:17.648+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:17.649+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:20.163+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:20.165+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:20.167+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:20.169+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:20.170+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:22.683+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:22.684+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:22.686+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:22.687+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:22.688+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:25.201+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:25.207+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:25.209+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:25.210+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:25.212+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:25.220+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Using chromedriver 150.0.7871.124 (resolved driver for Chrome 150)
+2026-08-02T17:59:25.225+03:00  INFO 9036 --- [spring-thymeleaf-app] [onPool-worker-1] i.g.bonigarcia.wdm.WebDriverManager      : Exporting webdriver.chrome.driver as C:\Users\nn854\.cache\selenium\chromedriver\win64\150.0.7871.124\chromedriver.exe
+2026-08-02T17:59:26.027+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.devtools.CdpVersionFinder   : Unable to find CDP implementation matching 150
+2026-08-02T17:59:26.028+03:00  WARN 9036 --- [spring-thymeleaf-app] [onPool-worker-1] o.o.selenium.chromium.ChromiumDriver     : Unable to find version of CDP to use for 150.0.7871.187. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.31.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+2026-08-02T17:59:27.731+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:27.732+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:27.734+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:27.734+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:27.735+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-08-02T17:59:30.245+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/metro-prices", parameters={}
+2026-08-02T17:59:30.258+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.demo.controller.HomeController#metroPrices()
+2026-08-02T17:59:30.260+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-08-02T17:59:30.261+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{products=[], refreshing=true}]
+2026-08-02T17:59:30.263+03:00 DEBUG 9036 --- [spring-thymeleaf-app] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
