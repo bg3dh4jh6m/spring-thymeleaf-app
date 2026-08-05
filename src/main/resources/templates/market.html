@@ -134,7 +134,11 @@
         }
         .price-table th.sortable-column { cursor: pointer; user-select: none; }
         .price-table th.sortable-column:hover { background: #303054; }
+        #metro-price-table th[draggable="true"] { cursor: grab; }
+        #metro-price-table th[draggable="true"].dragging { cursor: grabbing; opacity: 0.45; }
         .price-table th.sortable-column::after { content: ' ↕'; opacity: 0.55; }
+        .price-table th.sortable-column.sort-ascending::after { content: ' ↑'; opacity: 1; }
+        .price-table th.sortable-column.sort-descending::after { content: ' ↓'; opacity: 1; }
         .column-controls { position: relative; display: flex; justify-content: flex-end; gap: 0.5rem; margin: 0.75rem 0 0.25rem; }
         .column-controls > button { border: 1px solid #d7dbea; background: #fff; color: #34375a; border-radius: 7px; padding: 0.45rem 0.75rem; cursor: pointer; }
         .column-menu { display: none; position: absolute; right: 0; top: calc(100% + 0.35rem); z-index: 20; min-width: 210px; padding: 0.65rem; background: #fff; border: 1px solid #d7dbea; border-radius: 9px; box-shadow: 0 8px 24px rgba(25, 30, 70, 0.16); }
@@ -355,6 +359,7 @@
                     </div>
 
                     <div class="column-controls">
+                        <button id="metro-export-button" type="button">⇩ Excel</button>
                         <button id="metro-package-button" type="button" aria-expanded="false">⚗ Разфасовки</button>
                         <div id="metro-package-menu" class="column-menu package-menu" aria-label="Филтър по разфасовка">
                             <label><input type="checkbox" data-metro-measure="кг"> Само тегло (кг)</label>
@@ -555,6 +560,17 @@
         } catch (_) {
             visibleMetroColumns = new Set(defaultMetroColumns);
         }
+        let metroColumnOrder;
+        try {
+            const savedOrder = JSON.parse(localStorage.getItem('metro-column-order-v1'));
+            metroColumnOrder = Array.isArray(savedOrder)
+                && savedOrder.length === defaultMetroColumns.length
+                && defaultMetroColumns.every(column => savedOrder.includes(column))
+                ? savedOrder
+                : [...defaultMetroColumns];
+        } catch (_) {
+            metroColumnOrder = [...defaultMetroColumns];
+        }
 
         function applyMetroColumnVisibility() {
             document.querySelectorAll('#metro-price-table [data-column]').forEach(element => {
@@ -562,6 +578,26 @@
             });
             document.querySelectorAll('[data-toggle-column]').forEach(input => {
                 input.checked = visibleMetroColumns.has(input.dataset.toggleColumn);
+            });
+            applyMetroColumnOrder();
+        }
+
+        function applyMetroColumnOrder() {
+            const table = document.getElementById('metro-price-table');
+            const headerRow = table.querySelector('thead tr');
+            const headers = new Map([...headerRow.querySelectorAll('th[data-column]')]
+                .map(header => [header.dataset.column, header]));
+            metroColumnOrder.forEach(column => {
+                const header = headers.get(column);
+                if (header) headerRow.appendChild(header);
+            });
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const cells = new Map([...row.querySelectorAll('td[data-column]')]
+                    .map(cell => [cell.dataset.column, cell]));
+                metroColumnOrder.forEach(column => {
+                    const cell = cells.get(column);
+                    if (cell) row.appendChild(cell);
+                });
             });
         }
 
@@ -684,26 +720,87 @@
             event.preventDefault();
             metroTableScroll.scrollLeft += event.deltaY || event.deltaX;
         }, {passive: false});
-        const metroColumns = ['catalogCode', 'supplierCode', null, 'name', 'packageWeight', 'unitsPerPackage', 'totalQuantity', 'measureUnit', 'trademark', 'price', 'pricePerUnit', 'pricePerMeasure', 'addedAt'];
-        document.querySelectorAll('#metro-price-table th').forEach((header, index) => {
-            const key = metroColumns[index];
-            if (!key) return;
-            header.classList.add('sortable-column');
-            header.title = 'Натисни за сортиране';
-            header.addEventListener('click', () => {
-                metroSortDirection = metroSortKey === key ? -metroSortDirection : 1;
-                metroSortKey = key;
-                renderMetroRows();
+        let draggedMetroColumn = null;
+        document.querySelectorAll('#metro-price-table th[data-column]').forEach(header => {
+            const key = header.dataset.column;
+            if (key !== 'image') {
+                header.classList.add('sortable-column');
+                header.title = 'Натисни за сортиране. Плъзни, за да разместиш колоната.';
+                header.addEventListener('click', () => {
+                    metroSortDirection = metroSortKey === key ? -metroSortDirection : 1;
+                    metroSortKey = key;
+                    renderMetroRows();
+                });
+            } else {
+                header.title = 'Плъзни, за да разместиш колоната.';
+            }
+            header.draggable = true;
+            header.addEventListener('dragstart', event => {
+                draggedMetroColumn = key;
+                header.classList.add('dragging');
+                event.dataTransfer.effectAllowed = 'move';
+            });
+            header.addEventListener('dragend', () => {
+                draggedMetroColumn = null;
+                header.classList.remove('dragging');
+            });
+            header.addEventListener('dragover', event => {
+                if (draggedMetroColumn && draggedMetroColumn !== key) event.preventDefault();
+            });
+            header.addEventListener('drop', event => {
+                event.preventDefault();
+                if (!draggedMetroColumn || draggedMetroColumn === key) return;
+                const from = metroColumnOrder.indexOf(draggedMetroColumn);
+                const to = metroColumnOrder.indexOf(key);
+                metroColumnOrder.splice(from, 1);
+                metroColumnOrder.splice(to, 0, draggedMetroColumn);
+                localStorage.setItem('metro-column-order-v1', JSON.stringify(metroColumnOrder));
+                applyMetroColumnOrder();
             });
         });
 
+        function updateMetroSortIndicators() {
+            document.querySelectorAll('#metro-price-table th[data-column]').forEach(header => {
+                const isCurrent = header.dataset.column === metroSortKey;
+                header.classList.toggle('sort-ascending', isCurrent && metroSortDirection === 1);
+                header.classList.toggle('sort-descending', isCurrent && metroSortDirection === -1);
+                header.setAttribute('aria-sort', isCurrent ? (metroSortDirection === 1 ? 'ascending' : 'descending') : 'none');
+            });
+        }
+
         function metroComparable(product, key) {
             const value = product[key] || '';
-            if (key === 'price' || key === 'pricePerUnit' || key === 'pricePerMeasure' || key === 'packageWeight' || key === 'totalQuantity' || key === 'unitsPerPackage') {
+            if (key === 'price' || key === 'pricePerUnit' || key === 'pricePerMeasure' || key === 'packageWeight' || key === 'unitsPerPackage') {
                 const number = parseFloat(value.replace(',', '.').replace(/[^0-9.]/g, ''));
                 return Number.isNaN(number) ? Number.MAX_VALUE : number;
             }
             return value.toLocaleLowerCase('bg');
+        }
+
+        function metroTotalQuantity(value) {
+            const match = String(value || '').toLocaleLowerCase('bg')
+                .match(/(\d+(?:[.,]\d+)?)\s*(кг|kg|гр\.?|г|gr\.?|g|мл|ml|л|l)(?=\s|$)/);
+            if (!match) return null;
+            const amount = Number(match[1].replace(',', '.'));
+            if (!Number.isFinite(amount)) return null;
+            if (['кг', 'kg'].includes(match[2])) return {type: 'weight', amount: amount * 1000};
+            if (['гр', 'гр.', 'г', 'gr', 'gr.', 'g'].includes(match[2])) return {type: 'weight', amount};
+            return {type: 'volume', amount: ['л', 'l'].includes(match[2]) ? amount * 1000 : amount};
+        }
+
+        function formatMetroTotalQuantity(value) {
+            const quantity = metroTotalQuantity(value);
+            if (quantity === null) return value;
+            const unit = quantity.type === 'weight' ? 'кг' : 'л';
+            return `${(quantity.amount / 1000).toLocaleString('bg-BG', {maximumFractionDigits: 3})} ${unit}`;
+        }
+
+        function compareMetroTotalQuantities(leftValue, rightValue) {
+            const left = metroTotalQuantity(leftValue);
+            const right = metroTotalQuantity(rightValue);
+            if (!left || !right) return left ? -1 : right ? 1 : 0;
+            if (left.type !== right.type) return left.type === 'weight' ? -1 : 1;
+            return left.amount - right.amount;
         }
 
         function addMetroCell(row, text, className, column) {
@@ -720,6 +817,9 @@
                 (!selectedMetroPackages.size || selectedMetroPackages.has(packageKey(product)))
                 && (!selectedMetroMeasures.size || selectedMetroMeasures.has(product.measureUnit)));
             const sorted = [...filtered].sort((left, right) => {
+                if (metroSortKey === 'totalQuantity') {
+                    return compareMetroTotalQuantities(left.totalQuantity, right.totalQuantity) * metroSortDirection;
+                }
                 const a = metroComparable(left, metroSortKey);
                 const b = metroComparable(right, metroSortKey);
                 return (a < b ? -1 : a > b ? 1 : 0) * metroSortDirection;
@@ -754,7 +854,7 @@
                 addMetroCell(row, product.name, '', 'name');
                 addMetroCell(row, product.packageWeight || product.packageSize, '', 'packageWeight');
                 addMetroCell(row, product.unitsPerPackage, '', 'unitsPerPackage');
-                addMetroCell(row, product.totalQuantity, '', 'totalQuantity');
+                addMetroCell(row, formatMetroTotalQuantity(product.totalQuantity), '', 'totalQuantity');
                 addMetroCell(row, product.measureUnit, '', 'measureUnit');
                 addMetroCell(row, product.trademark, '', 'trademark');
                 addMetroCell(row, product.price, 'price', 'price');
@@ -764,7 +864,44 @@
                 body.appendChild(row);
             });
             applyMetroColumnVisibility();
+            updateMetroSortIndicators();
         }
+
+        document.getElementById('metro-export-button').addEventListener('click', async () => {
+            const button = document.getElementById('metro-export-button');
+            const visibleHeaders = [...document.querySelectorAll('#metro-price-table thead th[data-column]')]
+                .filter(header => header.dataset.column !== 'image' && visibleMetroColumns.has(header.dataset.column));
+            const rows = [...document.querySelectorAll('#metro-products-body tr')].map(row =>
+                visibleHeaders.map(header => {
+                    const cell = row.querySelector(`[data-column="${header.dataset.column}"]`);
+                    const image = cell?.querySelector('img');
+                    return image ? image.src : (cell?.textContent.trim() || '');
+                }));
+            if (!rows.length) {
+                alert('Няма видими Metro продукти за експортиране.');
+                return;
+            }
+            button.disabled = true;
+            button.textContent = 'Подготвяне…';
+            try {
+                const response = await fetch('/api/metro-prices/export', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({headers: visibleHeaders.map(header => header.textContent.trim()), rows})
+                });
+                if (!response.ok) throw new Error('Export failed');
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(await response.blob());
+                link.download = 'metro-prices.xlsx';
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } catch (_) {
+                alert('Експортът в Excel не успя. Опитайте отново.');
+            } finally {
+                button.disabled = false;
+                button.textContent = '⇩ Excel';
+            }
+        });
 
         function pollMetroPrices() {
             if (activeWholesaler !== 'metro') {
@@ -788,6 +925,9 @@
                 })
                 .catch(() => window.setTimeout(pollMetroPrices, 5000));
         }
+        document.querySelectorAll('#metro-products-body td[data-column="totalQuantity"]').forEach(cell => {
+            cell.textContent = formatMetroTotalQuantity(cell.textContent.trim()) || '—';
+        });
         window.setTimeout(pollMetroPrices, 250);
         applyMetroColumnVisibility();
 

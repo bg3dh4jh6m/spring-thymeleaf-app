@@ -72,6 +72,13 @@
             <version>4.30.0</version>
         </dependency>
 
+        <!-- Native Excel (.xlsx) export -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.3.0</version>
+        </dependency>
+
         <!-- WebDriverManager - auto-manages browser drivers -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
